@@ -1,0 +1,2485 @@
+web-scraper-order	web-scraper-start-url	问题名字	提问时间	提出的问题	提出的问题-href	name	answer
+1574231283-197	https://github.com/open62541/open62541/issues?page=5&q=is%3Aissue+is%3Aopen	Subscriber implementation not subscribing to timestamp?	"#2771
+            opened on 29 May by
+            theresa95"	Subscriber implementation not subscribing to timestamp?	https://github.com/open62541/open62541/issues/2771		"Hello @theresa95,
+Sounds good.
+Question 1:
+
+Subscribing application (It is subscribing to 4 hardcoded DataSetFields. The rst field is a DateTime type. So as far as I understand, it should be able to subscribe to the publishing timestamp field.)
+
+
+Yes, the implementation seems to have a publisher that publishes the dateandtime for every 100ms interval. And also the subscriber should subscribe the same. Your understanding seems to be perfect.
+
+
+Question 2: So as you can see in the subscriber console, the four VariableNodes are successfully added (first of which is of type DateTime). But it seems like the subscribe application is not able to parse the timestamp withing the NetworkMessage.
+
+
+I see you misunderstood the console print in the subscriber, because if I'm not wrong you expected a print near the ""Message Receive:"". And it is empty because it is just a print statement in ""UA_ReaderGroup_subscribeCallback"" in /src/pubsub/ua_pubsub.c in line:2392
+
+
+
+
+if you want to see the value of the ""dateandtime"" from the subscriber information model, use the client gui and browse the information model when the subscriber is running. Then you can see the data change. The subscriber implementation doesn't seems to have a UA_server_readValue() API to read the variable value from the information model and display the value in the console print. If you want to read and print in the tutorial application use the UA_server_readValue() API in a separate call back and read repeatedly
+
+
+Question 3: Also, I do not understand the console output of the publish application. It says that two nodes are not found. Why is that? Which nodes are they?
+
+
+In the publisher if you browse the information model using the client tool you can find the objects without the parent node. And also it's not mandatory that objects should have a parent node name. Its a optional in modelling rule. That's the reason for this ""Node id not found"" console print. But to my understanding you don't need to worry about this, it means that it won't affect the publisher and subscriber working.
+
+
+Question 4: I would like to use this subscriber implementation to subscribe to my published sensorvalues. But since the application is not able to subscribe to the timestamp correctly, I will have to solve this issue first.
+
+
+You don't need to solve anything. It seems to be working fine.
+
+
+Hope my answer helps.
+Thanks,
+
+Merlin"
+1574231533-319	https://github.com/open62541/open62541/issues?page=5&q=is%3Aissue+is%3Aopen	Problem when using multiple DataSetReader	"#2817
+            opened on 14 Jun by
+            Fischer-Thomas"	Problem when using multiple DataSetReader	https://github.com/open62541/open62541/issues/2817		if(LIST_FIRST(&pConnection->readerGroups)->readersCount == 1) {
+1574231880-458	https://github.com/open62541/open62541/issues?page=4&q=is%3Aissue+is%3Aopen	Event-based Subscriber OPCUA pubsub	"#2890
+            opened on 17 Jul by
+            canadyre"	Event-based Subscriber OPCUA pubsub	https://github.com/open62541/open62541/issues/2890		"Hi @sohailmushtaq ,
+
+Thanks for the help with that! I've used MQTT so I'll look into that some more.
+As for your question, it has worked pretty well as far as I can tell. You just have to use a cross compiler, I usually compile on my desktop and then send to the Raspberry Pi. Also, you have to modify the code to work with 32 bits vs 64, but otherwise it has worked well."
+1574231477-282	https://github.com/open62541/open62541/issues?page=5&q=is%3Aissue+is%3Aopen	Dependencies between CustomDataTypes in different UA_DataTypeArray not supported	"#2808
+            opened on 12 Jun by
+            TorbenD"	Dependencies between CustomDataTypes in different UA_DataTypeArray not supported	https://github.com/open62541/open62541/issues/2808	jpfr	
+1574231391-228	https://github.com/open62541/open62541/issues?page=5&q=is%3Aissue+is%3Aopen	UA_server_browse maxrefs	"#2791
+            opened on 5 Jun by
+            etm"	UA_server_browse maxrefs	https://github.com/open62541/open62541/issues/2791	etm	
+1574231601-365	https://github.com/open62541/open62541/issues?page=5&q=is%3Aissue+is%3Aopen	Subscriber: Using multiple ReaderGroups causes PubSubChannel->regist to fail	"#2839
+            opened on 24 Jun by
+            Fischer-Thomas"	Subscriber: Using multiple ReaderGroups causes PubSubChannel->regist to fail	https://github.com/open62541/open62541/issues/2839		"Hi @Fischer-Thomas,
+
+We have addressed this issue in PR #2944.
+
+The same has been merged to the master.
+Regards
+
+opcua-tsn-team-kalycito"
+1574231652-389	https://github.com/open62541/open62541/issues?page=5&q=is%3Aissue+is%3Aopen	Performance measurement of Client/Server and Pub/Sub on VxWorks	"#2846
+            opened on 26 Jun by
+            kingalexsylvester"	Performance measurement of Client/Server and Pub/Sub on VxWorks	https://github.com/open62541/open62541/issues/2846		"Hello All:
+Here is the implementation. Please feedback.
+/*
+* This implementation was done to measure the performance of the Publisher
+* Subscriber implementation between two nodes on a VxWorks OS environment.
+* The application logic is that, sending a counter data from NODE 1 and the
+* NODE 2 receives it to compare if it is an incremented value. The same value
+* is sent back to NODE 1, now NODE 1 gets the value and increments it by 1 and
+* sends it back to NODE 2 where the round-trip measurement is done if it is an
+* incremented value. This snippet was verfied with hardwared signal toggle.
+*
+* Notes: 
+* Here both NODE 1 and NODE 2 will be running both Publisher and Subscriber applications
+* NODE 1: Will receive the data and increment it by 1 and send to NODE 2
+* NODE 2: Receives the data and checks if it is incremented and measurement is done.
+*         After which the value is sent back to NODE 1
+*/
+
+//Global declerations
+struct timespec t1;
+unsigned long long newRoundTripTime, maxRoundTripTime, minRoundTripTime;
+unsigned long long prevCounterVal = 1;
+
+/*
+* Implement the below code snippet in your subscriber function
+* that is running on node 2. Since I have used my own subscriber
+* implementation, I haven't shared my code sections which might confuse others.
+*/
+void yourSubscriberFunction()
+{
+
+    unsigned long long  counterVal; //the counter from node 1
+    struct timespec t2;             //to store the current time
+	
+	/*
+	* store the subscribed counter value to the
+	* counterVal variable. Here we have done our own
+	* subscriber implementation so I haven't added the
+	* code sections which might confuse people.
+	*/
+    counterVal = *(UA_UInt64 *)dsm->data.keyFrameData.dataSetFields[fieldCount].value.data;
+
+	/*
+	* NOTE: The assumption is that round trip value
+	* will not exceed more than 1 second. If your application
+	* needs it then you go to include the subtraction of sec
+	* and nsec seperately.
+	*/
+   if (prevCounterVal == (counterVal-1))
+   {
+   	    clock_gettime(CLOCK_REALTIME, &t2);
+   	    newRoundTripTime = getTspecDiff(t1, t2);
+   	    
+   	    if (newRoundTripTime > maxRoundTripTime)
+   	    {
+   	    	/*
+   	    	* View the value using live debug
+   	    	* (or)
+   	    	* print the value every 10 minutes if
+   	    	* profiling is being done for 10M+ cycles
+   	    	*/
+   	    	maxRoundTripTime = newRoundTripTime;
+   	    }
+   	    else if (newRoundTripTime < minRoundTripTime)
+   	    {
+   	    	/*
+   	    	* View the value using live debug
+   	    	* (or)
+   	    	* print the value every 10 minutes if
+   	    	* profiling is being done for 10M+ cycles
+   	    	*/
+   	    	minRoundTripTime = newRoundTripTime;
+   	    }
+   }
+   
+   // Call your publish function to send the same value to NODE 1
+  yourPublisherFunction(counterVal);
+
+   /*
+   * Store the time and counter value for next iteration
+   */
+   t1 = t2;
+   prevCounterVal = counterVal;
+
+}
+
+/*
+* This function returns the difference of two time
+* values in the order of nano seconds.
+* t1: old time
+* t2: current time/ future to t1
+*/
+static unsigned long long getTspecDiff(struct timespec t1, struct timespec t2)
+{
+	unsigned long long diff = NSEC_TO_SEC * t2.tv_sec + t2.tv_nsec;
+
+	diff = diff - (NSEC_TO_SEC * t1.tv_sec + t1.tv_nsec);
+	
+	return diff;
+}"
+1574231477-281	https://github.com/open62541/open62541/issues?page=5&q=is%3Aissue+is%3Aopen	Dependencies between CustomDataTypes in different UA_DataTypeArray not supported	"#2808
+            opened on 12 Jun by
+            TorbenD"	Dependencies between CustomDataTypes in different UA_DataTypeArray not supported	https://github.com/open62541/open62541/issues/2808	TorbenD	
+1574231340-210	https://github.com/open62541/open62541/issues?page=5&q=is%3Aissue+is%3Aopen	Updating nodes (deleting and adding nodes) during runtime from dedicated thread	"#2783
+            opened on 4 Jun by
+            Nik654"	Updating nodes (deleting and adding nodes) during runtime from dedicated thread	https://github.com/open62541/open62541/issues/2783		"Open62541 thread-safe in total, there are some minor things already implemented, but most of the library is not thread-safe.
+To overcome this issue, I use the following code for the main loop (C++):
+    std::unique_lock<std::remove_reference<decltype(OPCUA_Mutex)>::type> l_opcUA(OPCUA_Mutex, std::defer_lock);
+    while (*run) {
+      l_opcUA.lock();
+      UA_Client_run_iterate(pClient.get(), 10);
+      l_opcUA.unlock();
+      std::this_thread::yield(); // < This line ensures that a waiting thread is executed
+      std::this_thread::sleep_for(std::chrono::microseconds(10));
+    }
+
+OPCUA_Mutex is a std::mutex which is shared with the pointer to the OPC UA Client."
+1574231800-417	https://github.com/open62541/open62541/issues?page=4&q=is%3Aissue+is%3Aopen	OPC UA Pub/Sub over MQTT	"#2865
+            opened on 3 Jul by
+            canadyre"	OPC UA Pub/Sub over MQTT	https://github.com/open62541/open62541/issues/2865	sohailmushtaq	
+1574231374-220	https://github.com/open62541/open62541/issues?page=5&q=is%3Aissue+is%3Aopen	BadSessionIdInvalid from Client	"#2790
+            opened on 5 Jun by
+            MarkusWeinand"	BadSessionIdInvalid from Client	https://github.com/open62541/open62541/issues/2790	MarkusWeinand	
+1574231460-257	https://github.com/open62541/open62541/issues?page=5&q=is%3Aissue+is%3Aopen	"PubSub Publisher example, not setting the DataSetMetaData"	"#2800
+            opened on 8 Jun by
+            cpipero"	"PubSub Publisher example, not setting the DataSetMetaData"	https://github.com/open62541/open62541/issues/2800	andreasebner	
+1574231409-240	https://github.com/open62541/open62541/issues?page=5&q=is%3Aissue+is%3Aopen	Processing the message failed with error BadOutOfMemory	"#2792
+            opened on 5 Jun by
+            MarineKing5248"	Processing the message failed with error BadOutOfMemory	https://github.com/open62541/open62541/issues/2792	mlgiraud	
+1574231533-327	https://github.com/open62541/open62541/issues?page=5&q=is%3Aissue+is%3Aopen	Problem when using multiple DataSetReader	"#2817
+            opened on 14 Jun by
+            Fischer-Thomas"	Problem when using multiple DataSetReader	https://github.com/open62541/open62541/issues/2817		
+1574231914-501	https://github.com/open62541/open62541/issues?page=4&q=is%3Aissue+is%3Aopen	Generated custom data-types inside a method call	"#2920
+            opened on 24 Jul by
+            starki93"	Generated custom data-types inside a method call	https://github.com/open62541/open62541/issues/2920		
+1574231460-273	https://github.com/open62541/open62541/issues?page=5&q=is%3Aissue+is%3Aopen	"PubSub Publisher example, not setting the DataSetMetaData"	"#2800
+            opened on 8 Jun by
+            cpipero"	"PubSub Publisher example, not setting the DataSetMetaData"	https://github.com/open62541/open62541/issues/2800		And then you can just say UA_FieldMetaData_init(&dsmd->fields[i]); to init.
+1574231516-311	https://github.com/open62541/open62541/issues?page=5&q=is%3Aissue+is%3Aopen	How to create a certification and send this to server	"#2816
+            opened on 14 Jun by
+            AndyarcherReset"	How to create a certification and send this to server	https://github.com/open62541/open62541/issues/2816		https://github.com/open62541/open62541/blob/master/tools/certs/create_self-signed.py
+1574231477-288	https://github.com/open62541/open62541/issues?page=5&q=is%3Aissue+is%3Aopen	Dependencies between CustomDataTypes in different UA_DataTypeArray not supported	"#2808
+            opened on 12 Jun by
+            TorbenD"	Dependencies between CustomDataTypes in different UA_DataTypeArray not supported	https://github.com/open62541/open62541/issues/2808		"Thats correct, but we need to make it more modular. With our nodeswitch extension https://github.com/open62541/open62541/pull/2748 it is possible to load different nodestore at runtime and they all get different namespaces. So we want to seperate the dataTypes to the namespaces they belong to. And then it does not make sense to put all dataTypes in one namespace.
+Yes we have different .bsd files"
+1574231391-237	https://github.com/open62541/open62541/issues?page=5&q=is%3Aissue+is%3Aopen	UA_server_browse maxrefs	"#2791
+            opened on 5 Jun by
+            etm"	UA_server_browse maxrefs	https://github.com/open62541/open62541/issues/2791		"Sorry for the late response. The nature of the error changed somehow.
+When setting maxrefs to 1:
+While before i got an error for each node i tried to insert, now i get the following error once.
+Connection 0 | SecureChannel 0 | Session g=00000001-0000-0000-0000-000000000000 | AddNodes: Node type ns=42864;i=2696489728 not found
+where the ns and the numeric id are random. The error message is always the second message that appears when starting the server. If i increase maxrefs (as before) the error vanishes. But at least all nodes are here now (or at least i cant see any missing).
+When setting maxrefs to 2:
+
+Error vanishes. Will try with a big server with 1000s of nodes tomorrow to be sure, to find out if it just occurs with higher node count."
+1574231550-346	https://github.com/open62541/open62541/issues?page=5&q=is%3Aissue+is%3Aopen	Intel Compiler 18.1 crash when compiling amalgamation header/source under Linux	"#2823
+            opened on 18 Jun by
+            ebissonn"	Intel Compiler 18.1 crash when compiling amalgamation header/source under Linux	https://github.com/open62541/open62541/issues/2823	ebissonn	
+1574231898-480	https://github.com/open62541/open62541/issues?page=4&q=is%3Aissue+is%3Aopen	Compile freeRTOS with open62541 errors	"#2893
+            opened on 18 Jul by
+            mrburen121"	Compile freeRTOS with open62541 errors	https://github.com/open62541/open62541/issues/2893		"I have pdMS_TO_TICKS defined in freertos/include/projdefs.h
+
+It should be defined in your freertos somewhere
+About UA_ServerConfig_new_customBuffer can maybe @Pro help"
+1574231601-364	https://github.com/open62541/open62541/issues?page=5&q=is%3Aissue+is%3Aopen	Subscriber: Using multiple ReaderGroups causes PubSubChannel->regist to fail	"#2839
+            opened on 24 Jun by
+            Fischer-Thomas"	Subscriber: Using multiple ReaderGroups causes PubSubChannel->regist to fail	https://github.com/open62541/open62541/issues/2839		"@opcua-tsn-team-kalycito
+
+Please have a look.
+
+Also, cover this with a unit test to prevent regressions.
+Thanks."
+1574231460-269	https://github.com/open62541/open62541/issues?page=5&q=is%3Aissue+is%3Aopen	"PubSub Publisher example, not setting the DataSetMetaData"	"#2800
+            opened on 8 Jun by
+            cpipero"	"PubSub Publisher example, not setting the DataSetMetaData"	https://github.com/open62541/open62541/issues/2800		"Hey Cos,
+you are looking at the right code to set the content during reading.
+
+Two things are required:
+
+Set and store the UA_FieldMetaData in the internal DataSet representation
+Return the fieldmetadata in the onRead callback.
+
+The UA_DataSetField structure (publishedDataSet->fields) contains a UA_FieldMetaData entry.
+
+So you can copy that over during onRead.
+But the UA_FieldMetaData is not automatically filled atm.
+
+Most of the information can be read from the variable definition when the field is created.
+We might have to extend the public API so that the user can fill in more MetaData information.
+
+At this time you need to expose some internals to add the data for your demo."
+1574231477-287	https://github.com/open62541/open62541/issues?page=5&q=is%3Aissue+is%3Aopen	Dependencies between CustomDataTypes in different UA_DataTypeArray not supported	"#2808
+            opened on 12 Jun by
+            TorbenD"	Dependencies between CustomDataTypes in different UA_DataTypeArray not supported	https://github.com/open62541/open62541/issues/2808		"If the DataTypes are in both UA_DataTypeArray
+
+You mean ""are both in the same UA_DataTypeArray""?
+
+you get different decoding and encoding functions, but they both have the same name
+
+You should not have to define DataTypes twice.
+
+Normally, the dependency is
+
+between builtin types
+from a custom type to a builtin type
+between custom types in the same .bsd file
+
+These cases are automatically covered.
+Do you have a dependency between DataTypes from different .bsd files?"
+1574231323-204	https://github.com/open62541/open62541/issues?page=5&q=is%3Aissue+is%3Aopen	Historical data question	"#2781
+            opened on 4 Jun by
+            luibass92"	Historical data question	https://github.com/open62541/open62541/issues/2781	juangburgos	
+1574231618-381	https://github.com/open62541/open62541/issues?page=5&q=is%3Aissue+is%3Aopen	"[OPCUA CLIENT]: ""UA_Client_getEndpoints""  return ""BadSecureChannelIdInvalid"""	"#2844
+            opened on 26 Jun by
+            elitezhu"	"[OPCUA CLIENT]: ""UA_Client_getEndpoints""  return ""BadSecureChannelIdInvalid"""	https://github.com/open62541/open62541/issues/2844		"The only notable difference i see is that the open62541 client sends null array instead of empty arrays.
+
+You could try changing the arrays to empty arrays in the getendpoints request to see if this solves the problem.
+
+I couldn't find anything in the standard that fobids null arrays, so it could be that this is a misbehavior on the devices side."
+1574231618-383	https://github.com/open62541/open62541/issues?page=5&q=is%3Aissue+is%3Aopen	"[OPCUA CLIENT]: ""UA_Client_getEndpoints""  return ""BadSecureChannelIdInvalid"""	"#2844
+            opened on 26 Jun by
+            elitezhu"	"[OPCUA CLIENT]: ""UA_Client_getEndpoints""  return ""BadSecureChannelIdInvalid"""	https://github.com/open62541/open62541/issues/2844		"@mlgiraud I have update the array size to 0, and the telegram looks almost the same as the one of UaExpert, but it still fails. Very Strange.
+B&R_PLC_Open62541_Telegram_2019_07_04.zip
+
+B&R_PLC_Uaexpert_Telegram_2019_07_04.zip
+@opcua-tsn-team-kalycito Sorr"
+1574231601-363	https://github.com/open62541/open62541/issues?page=5&q=is%3Aissue+is%3Aopen	Subscriber: Using multiple ReaderGroups causes PubSubChannel->regist to fail	"#2839
+            opened on 24 Jun by
+            Fischer-Thomas"	Subscriber: Using multiple ReaderGroups causes PubSubChannel->regist to fail	https://github.com/open62541/open62541/issues/2839	opcua-tsn-team-kalycito	
+1574231898-464	https://github.com/open62541/open62541/issues?page=4&q=is%3Aissue+is%3Aopen	Compile freeRTOS with open62541 errors	"#2893
+            opened on 18 Jul by
+            mrburen121"	Compile freeRTOS with open62541 errors	https://github.com/open62541/open62541/issues/2893	mrburen121	
+1574231391-235	https://github.com/open62541/open62541/issues?page=5&q=is%3Aissue+is%3Aopen	UA_server_browse maxrefs	"#2791
+            opened on 5 Jun by
+            etm"	UA_server_browse maxrefs	https://github.com/open62541/open62541/issues/2791		"@jpfr?
+I tried for several hours to create a small example, without all the complexity my server has.
+Could the problem be that i use UA_Server_browse inside the callback function of a UA_Server_forEachChildNodeCall?
+Maybe a common results table with faul"
+1574231494-301	https://github.com/open62541/open62541/issues?page=5&q=is%3Aissue+is%3Aopen	NamespaceArray looks good but Namespaces object doesn't match it	"#2810
+            opened on 12 Jun by
+            cpipero"	NamespaceArray looks good but Namespaces object doesn't match it	https://github.com/open62541/open62541/issues/2810		Perfect. Looking forward to it. ??
+1574231800-424	https://github.com/open62541/open62541/issues?page=4&q=is%3Aissue+is%3Aopen	OPC UA Pub/Sub over MQTT	"#2865
+            opened on 3 Jul by
+            canadyre"	OPC UA Pub/Sub over MQTT	https://github.com/open62541/open62541/issues/2865		"Hi,
+
+there is a branch which contains OPC UA PubSub MQTT with examples also. Check the branch pubsub_mqtt_clean. My master thesis is about OPC UA PubSub, so I've worked on PubSub with MQTT, in case you have questions just let me know.
+Regards
+Sohail"
+1574231760-403	https://github.com/open62541/open62541/issues?page=4&q=is%3Aissue+is%3Aopen	Historical data example code	"#2863
+            opened on 2 Jul by
+            GLmontanari"	Historical data example code	https://github.com/open62541/open62541/issues/2863		Try with latest master. Compile using CMake option UA_ENABLE_HISTORIZING set to true. I tried with VS2017 and UaExpert and it works.
+1574231460-259	https://github.com/open62541/open62541/issues?page=5&q=is%3Aissue+is%3Aopen	"PubSub Publisher example, not setting the DataSetMetaData"	"#2800
+            opened on 8 Jun by
+            cpipero"	"PubSub Publisher example, not setting the DataSetMetaData"	https://github.com/open62541/open62541/issues/2800	jpfr	
+1574231391-231	https://github.com/open62541/open62541/issues?page=5&q=is%3Aissue+is%3Aopen	UA_server_browse maxrefs	"#2791
+            opened on 5 Jun by
+            etm"	UA_server_browse maxrefs	https://github.com/open62541/open62541/issues/2791	etm	
+1574231618-378	https://github.com/open62541/open62541/issues?page=5&q=is%3Aissue+is%3Aopen	"[OPCUA CLIENT]: ""UA_Client_getEndpoints""  return ""BadSecureChannelIdInvalid"""	"#2844
+            opened on 26 Jun by
+            elitezhu"	"[OPCUA CLIENT]: ""UA_Client_getEndpoints""  return ""BadSecureChannelIdInvalid"""	https://github.com/open62541/open62541/issues/2844		"@opcua-tsn-team-kalycito , I have captured the raw telegram via wireshark, please have a check.
+
+B&R_PLC_OPCUA_RAW_TELEGRAM.zip"
+1574231914-498	https://github.com/open62541/open62541/issues?page=4&q=is%3Aissue+is%3Aopen	Generated custom data-types inside a method call	"#2920
+            opened on 24 Jul by
+            starki93"	Generated custom data-types inside a method call	https://github.com/open62541/open62541/issues/2920	starki93	
+1574231770-404	https://github.com/open62541/open62541/issues?page=4&q=is%3Aissue+is%3Aopen	Need for better TCP and mDNS interface selection	"#2864
+            opened on 2 Jul by
+            Pro"	Need for better TCP and mDNS interface selection	https://github.com/open62541/open62541/issues/2864	mlgiraud	
+1574231618-379	https://github.com/open62541/open62541/issues?page=5&q=is%3Aissue+is%3Aopen	"[OPCUA CLIENT]: ""UA_Client_getEndpoints""  return ""BadSecureChannelIdInvalid"""	"#2844
+            opened on 26 Jun by
+            elitezhu"	"[OPCUA CLIENT]: ""UA_Client_getEndpoints""  return ""BadSecureChannelIdInvalid"""	https://github.com/open62541/open62541/issues/2844		"@opcua-tsn-team-kalycito And this is the uaexpert telegram with the PLC via wirshark.
+
+B&R_PLC_Uaexpert_Telegram.zip"
+1574231533-335	https://github.com/open62541/open62541/issues?page=5&q=is%3Aissue+is%3Aopen	Problem when using multiple DataSetReader	"#2817
+            opened on 14 Jun by
+            Fischer-Thomas"	Problem when using multiple DataSetReader	https://github.com/open62541/open62541/issues/2817		
+1574231898-473	https://github.com/open62541/open62541/issues?page=4&q=is%3Aissue+is%3Aopen	Compile freeRTOS with open62541 errors	"#2893
+            opened on 18 Jul by
+            mrburen121"	Compile freeRTOS with open62541 errors	https://github.com/open62541/open62541/issues/2893	cabralfortiss	
+1574231460-268	https://github.com/open62541/open62541/issues?page=5&q=is%3Aissue+is%3Aopen	"PubSub Publisher example, not setting the DataSetMetaData"	"#2800
+            opened on 8 Jun by
+            cpipero"	"PubSub Publisher example, not setting the DataSetMetaData"	https://github.com/open62541/open62541/issues/2800		"@jpfr would you have any idea on this? It might make it for a great Interop week if I can fix this.
+If you look at my last comment, I'm either very close or way off track.
+Thanks in advance,
+Cos"
+1574231898-463	https://github.com/open62541/open62541/issues?page=4&q=is%3Aissue+is%3Aopen	Compile freeRTOS with open62541 errors	"#2893
+            opened on 18 Jul by
+            mrburen121"	Compile freeRTOS with open62541 errors	https://github.com/open62541/open62541/issues/2893	cabralfortiss	
+1574231914-505	https://github.com/open62541/open62541/issues?page=4&q=is%3Aissue+is%3Aopen	Generated custom data-types inside a method call	"#2920
+            opened on 24 Jul by
+            starki93"	Generated custom data-types inside a method call	https://github.com/open62541/open62541/issues/2920		ua_generate_nodeset_and_datatypes(
+1574231898-486	https://github.com/open62541/open62541/issues?page=4&q=is%3Aissue+is%3Aopen	Compile freeRTOS with open62541 errors	"#2893
+            opened on 18 Jul by
+            mrburen121"	Compile freeRTOS with open62541 errors	https://github.com/open62541/open62541/issues/2893		"Read the documentation carefully.
+It looks like you forgot this part:
+When compiling LwIP you need a file called lwipopts.h. In this file, you put all the configuration variables. You need to make sure that you have the following configurations there:
+#define LWIP_COMPAT_SOCKETS 0 // Don't do name define-transformation in networking function names.
+#define LWIP_SOCKET 1 // Enable Socket API (normally already set)
+#define LWIP_DNS 1 // enable the lwip_getaddrinfo function, struct addrinfo and more.
+#define SO_REUSE 1 // Allows to set the socket as reusable
+#define LWIP_TIMEVAL_PRIVATE 0 // This is optional. Set this flag if you get a compilation error about redefinition of struct timeval"
+1574231923-516	https://github.com/open62541/open62541/issues?page=4&q=is%3Aissue+is%3Aopen	"Compiled nodesets do not initialize the variable type, UA Expert can not write to variable"	"#2924
+            opened on 25 Jul by
+            Pro"	"Compiled nodesets do not initialize the variable type, UA Expert can not write to variable"	https://github.com/open62541/open62541/issues/2924	ccvca	
+1574231567-359	https://github.com/open62541/open62541/issues?page=5&q=is%3Aissue+is%3Aopen	Access control over endpoints	"#2829
+            opened on 18 Jun by
+            SebsSa"	Access control over endpoints	https://github.com/open62541/open62541/issues/2829		@Feras992 this you can also solve with the custom data/sessionContext from the AccessControl plugin. During ActivateSession you must store the relevant/session-data like username or permission groups in you own defined sessionContext.
+1574231460-251	https://github.com/open62541/open62541/issues?page=5&q=is%3Aissue+is%3Aopen	"PubSub Publisher example, not setting the DataSetMetaData"	"#2800
+            opened on 8 Jun by
+            cpipero"	"PubSub Publisher example, not setting the DataSetMetaData"	https://github.com/open62541/open62541/issues/2800	mpostol	
+1574231618-373	https://github.com/open62541/open62541/issues?page=5&q=is%3Aissue+is%3Aopen	"[OPCUA CLIENT]: ""UA_Client_getEndpoints""  return ""BadSecureChannelIdInvalid"""	"#2844
+            opened on 26 Jun by
+            elitezhu"	"[OPCUA CLIENT]: ""UA_Client_getEndpoints""  return ""BadSecureChannelIdInvalid"""	https://github.com/open62541/open62541/issues/2844	elitezhu	
+1574231391-236	https://github.com/open62541/open62541/issues?page=5&q=is%3Aissue+is%3Aopen	UA_server_browse maxrefs	"#2791
+            opened on 5 Jun by
+            etm"	UA_server_browse maxrefs	https://github.com/open62541/open62541/issues/2791		"Could the problem be that i use UA_Server_browse inside the callback function of a UA_Server_forEachChildNodeCall?
+
+If that is the issue, we have to fix it.
+
+Browse should not modify the information model in any way.
+The mentioned branch has merged to master.
+
+Can you update and retry?"
+1574231374-221	https://github.com/open62541/open62541/issues?page=5&q=is%3Aissue+is%3Aopen	BadSessionIdInvalid from Client	"#2790
+            opened on 5 Jun by
+            MarkusWeinand"	BadSessionIdInvalid from Client	https://github.com/open62541/open62541/issues/2790	jpfr	
+1574231533-329	https://github.com/open62541/open62541/issues?page=5&q=is%3Aissue+is%3Aopen	Problem when using multiple DataSetReader	"#2817
+            opened on 14 Jun by
+            Fischer-Thomas"	Problem when using multiple DataSetReader	https://github.com/open62541/open62541/issues/2817		}
+1574231919-512	https://github.com/open62541/open62541/issues?page=4&q=is%3Aissue+is%3Aopen	Semantic release numbers	"#2923
+            opened on 25 Jul by
+            jrcoding"	Semantic release numbers	https://github.com/open62541/open62541/issues/2923	jrcoding	
+1574231800-413	https://github.com/open62541/open62541/issues?page=4&q=is%3Aissue+is%3Aopen	OPC UA Pub/Sub over MQTT	"#2865
+            opened on 3 Jul by
+            canadyre"	OPC UA Pub/Sub over MQTT	https://github.com/open62541/open62541/issues/2865	rudoq32	
+1574231800-423	https://github.com/open62541/open62541/issues?page=4&q=is%3Aissue+is%3Aopen	OPC UA Pub/Sub over MQTT	"#2865
+            opened on 3 Jul by
+            canadyre"	OPC UA Pub/Sub over MQTT	https://github.com/open62541/open62541/issues/2865		"As far as I know, the PubSub mechanism is currently only supported by UADP."
+1574231584-360	https://github.com/open62541/open62541/issues?page=5&q=is%3Aissue+is%3Aopen	Historize data in a circular buffer	"#2835
+            opened on 20 Jun by
+            luibass92"	Historize data in a circular buffer	https://github.com/open62541/open62541/issues/2835	jpfr	
+1574231898-475	https://github.com/open62541/open62541/issues?page=4&q=is%3Aissue+is%3Aopen	Compile freeRTOS with open62541 errors	"#2893
+            opened on 18 Jul by
+            mrburen121"	Compile freeRTOS with open62541 errors	https://github.com/open62541/open62541/issues/2893		cc @cabralfortiss
+1574231340-208	https://github.com/open62541/open62541/issues?page=5&q=is%3Aissue+is%3Aopen	Updating nodes (deleting and adding nodes) during runtime from dedicated thread	"#2783
+            opened on 4 Jun by
+            Nik654"	Updating nodes (deleting and adding nodes) during runtime from dedicated thread	https://github.com/open62541/open62541/issues/2783	Nik654	
+1574231426-249	https://github.com/open62541/open62541/issues?page=5&q=is%3Aissue+is%3Aopen	Can report.ci be helpful?	"#2793
+            opened on 6 Jun by
+            escherstair"	Can report.ci be helpful?	https://github.com/open62541/open62541/issues/2793		I've just asked the developer if he has plans to support Check framework too.
+1574231409-242	https://github.com/open62541/open62541/issues?page=5&q=is%3Aissue+is%3Aopen	Processing the message failed with error BadOutOfMemory	"#2792
+            opened on 5 Jun by
+            MarineKing5248"	Processing the message failed with error BadOutOfMemory	https://github.com/open62541/open62541/issues/2792		"CRITICAL:opcua.client.ua_client.Socket:Received an error: MessageAbort(error:StatusCode(Good), reason:None
+
+That sounds like the problem is with python opcua.
+
+Wrong forum. Please post at FreePython's github.
+
+But when I am using python server and python clients there is no error at all. It only happens when I am using open62541 server and python clients. That is why I think the problem is with the C server."
+1574231323-205	https://github.com/open62541/open62541/issues?page=5&q=is%3Aissue+is%3Aopen	Historical data question	"#2781
+            opened on 4 Jun by
+            luibass92"	Historical data question	https://github.com/open62541/open62541/issues/2781		https://blog.basyskom.com/author/prus/
+1574231460-255	https://github.com/open62541/open62541/issues?page=5&q=is%3Aissue+is%3Aopen	"PubSub Publisher example, not setting the DataSetMetaData"	"#2800
+            opened on 8 Jun by
+            cpipero"	"PubSub Publisher example, not setting the DataSetMetaData"	https://github.com/open62541/open62541/issues/2800	cpipero	
+1574231652-385	https://github.com/open62541/open62541/issues?page=5&q=is%3Aissue+is%3Aopen	Performance measurement of Client/Server and Pub/Sub on VxWorks	"#2846
+            opened on 26 Jun by
+            kingalexsylvester"	Performance measurement of Client/Server and Pub/Sub on VxWorks	https://github.com/open62541/open62541/issues/2846	kingalexsylvester	
+1574231914-497	https://github.com/open62541/open62541/issues?page=4&q=is%3Aissue+is%3Aopen	Generated custom data-types inside a method call	"#2920
+            opened on 24 Jul by
+            starki93"	Generated custom data-types inside a method call	https://github.com/open62541/open62541/issues/2920	starki93	
+1574231898-478	https://github.com/open62541/open62541/issues?page=4&q=is%3Aissue+is%3Aopen	Compile freeRTOS with open62541 errors	"#2893
+            opened on 18 Jul by
+            mrburen121"	Compile freeRTOS with open62541 errors	https://github.com/open62541/open62541/issues/2893		"pub sub wasn't tested yet on freeRTOS+LwIP (from what I know). Try deactivating. Again, there isn't much we can do from here. If AI_PASSIVE is not recognized, you'll have to look for it in your code. The information provided in #2511 has made most people sucessfully run the opcua server. If something is working, probably you did something different. Take your time and read it carefully and investigate where the problem is coming from. Your problems seem to be related to your project and not to the open62541 code"
+1574231898-477	https://github.com/open62541/open62541/issues?page=4&q=is%3Aissue+is%3Aopen	Compile freeRTOS with open62541 errors	"#2893
+            opened on 18 Jul by
+            mrburen121"	Compile freeRTOS with open62541 errors	https://github.com/open62541/open62541/issues/2893		"I'm using MCUXpresse, this program is based on Eclipse. See below the compiler setthings that i have.
+
+
+
+It solved some of the errors. I still have this 7 errors:
+<command-line>: note: this is the location of the previous definition
+../src/open62541.c: In function 'UA_PubSubChannelUDPMC_open':
+../src/open62541.c:56100:81: error: invalid application of 'sizeof' to incomplete type 'struct sockaddr_storage'
+     channelDataUDPMC->ai_addr = (struct sockaddr_storage *) UA_calloc(1, sizeof(struct sockaddr_storage));
+                                                                                 ^~~~~~
+../src/open62541.c:56183:77: error: expected expression before ')' token
+         if(UA_inet_pton(AF_INET, interfaceAsChar, &group.ipv4.imr_interface)){
+                                                                             ^
+../src/open62541.c: In function 'UA_PubSubChannelUDPMC_send':
+../src/open62541.c:56306:81: error: invalid application of 'sizeof' to incomplete type 'struct sockaddr_storage'
+                         (struct sockaddr *) channelConfigUDPMC->ai_addr, sizeof(struct sockaddr_storage));
+                                                                                 ^~~~~~
+../src/open62541.c: In function 'ServerNetworkLayerTCP_start':
+../src/open62541.c:56845:32: error: expected expression before ';' token
+     hints.ai_flags = AI_PASSIVE;
+                                ^
+../src/open62541.c: In function 'ServerNetworkLayerTCP_listen':
+../src/open62541.c:56934:33: error: storage size of 'remote' isn't known
+         struct sockaddr_storage remote;
+                                 ^~~~~~
+../src/open62541.c:56934:33: warning: unused variable 'remote' [-Wunused-variable]
+make: *** [src/subdir.mk:35: src/open62541.o] Error 1
+""make -r -j8 all"" terminated with exit code 2. Build might be incomplete.
+
+Almost all of the errors are in the amalgamated original file ua_pubsub_udp.c. Could there be something wrong in my lwip configuration?"
+1574231516-307	https://github.com/open62541/open62541/issues?page=5&q=is%3Aissue+is%3Aopen	How to create a certification and send this to server	"#2816
+            opened on 14 Jun by
+            AndyarcherReset"	How to create a certification and send this to server	https://github.com/open62541/open62541/issues/2816	jpfr	
+1574231460-272	https://github.com/open62541/open62541/issues?page=5&q=is%3Aissue+is%3Aopen	"PubSub Publisher example, not setting the DataSetMetaData"	"#2800
+            opened on 8 Jun by
+            cpipero"	"PubSub Publisher example, not setting the DataSetMetaData"	https://github.com/open62541/open62541/issues/2800		"UA_realloc(dsmd->fields, dsmd->fieldsSize);
+
+This is not big enough.
+
+It should be UA_realloc(dsmd->fields, dsmd->fieldsSize * sizeof(UA_FieldMetaData));"
+1574231898-460	https://github.com/open62541/open62541/issues?page=4&q=is%3Aissue+is%3Aopen	Compile freeRTOS with open62541 errors	"#2893
+            opened on 18 Jul by
+            mrburen121"	Compile freeRTOS with open62541 errors	https://github.com/open62541/open62541/issues/2893	Pro	
+1574231834-441	https://github.com/open62541/open62541/issues?page=4&q=is%3Aissue+is%3Aopen	Server does not persist the NodeId of a Node	"#2873
+            opened on 9 Jul by
+            GeorgeSellner"	Server does not persist the NodeId of a Node	https://github.com/open62541/open62541/issues/2873	miehe-dup	
+1574231800-427	https://github.com/open62541/open62541/issues?page=4&q=is%3Aissue+is%3Aopen	OPC UA Pub/Sub over MQTT	"#2865
+            opened on 3 Jul by
+            canadyre"	OPC UA Pub/Sub over MQTT	https://github.com/open62541/open62541/issues/2865		We have a current PR for pubsub with MQTT in #2796.
+1574231710-394	https://github.com/open62541/open62541/issues?page=4&q=is%3Aissue+is%3Aopen	Single file distribution compilation terminated.	"#2855
+            opened on 29 Jun by
+            mdeva2"	Single file distribution compilation terminated.	https://github.com/open62541/open62541/issues/2855	jpfr	
+1574231800-420	https://github.com/open62541/open62541/issues?page=4&q=is%3Aissue+is%3Aopen	OPC UA Pub/Sub over MQTT	"#2865
+            opened on 3 Jul by
+            canadyre"	OPC UA Pub/Sub over MQTT	https://github.com/open62541/open62541/issues/2865	kusumy	
+1574231391-233	https://github.com/open62541/open62541/issues?page=5&q=is%3Aissue+is%3Aopen	UA_server_browse maxrefs	"#2791
+            opened on 5 Jun by
+            etm"	UA_server_browse maxrefs	https://github.com/open62541/open62541/issues/2791		"Hmm. This sounds bad.
+
+What happens if you run the example with valgrind?"
+1574231533-316	https://github.com/open62541/open62541/issues?page=5&q=is%3Aissue+is%3Aopen	Problem when using multiple DataSetReader	"#2817
+            opened on 14 Jun by
+            Fischer-Thomas"	Problem when using multiple DataSetReader	https://github.com/open62541/open62541/issues/2817		
+1574231460-274	https://github.com/open62541/open62541/issues?page=5&q=is%3Aissue+is%3Aopen	"PubSub Publisher example, not setting the DataSetMetaData"	"#2800
+            opened on 8 Jun by
+            cpipero"	"PubSub Publisher example, not setting the DataSetMetaData"	https://github.com/open62541/open62541/issues/2800		"Thanks @jpfr  , that was a silly one...
+
+And I forgot that I had an example in the subscriber tutorial. I edited my code above.
+
+Still no decoding but I'm getting closer.
+I know I'm implementing all this one level above where it should be but it helps understanding. We probably need to add some good documentation on this whole pub-sub. Let me know if I can help"
+1574231898-466	https://github.com/open62541/open62541/issues?page=4&q=is%3Aissue+is%3Aopen	Compile freeRTOS with open62541 errors	"#2893
+            opened on 18 Jul by
+            mrburen121"	Compile freeRTOS with open62541 errors	https://github.com/open62541/open62541/issues/2893	Pro	
+1574231618-367	https://github.com/open62541/open62541/issues?page=5&q=is%3Aissue+is%3Aopen	"[OPCUA CLIENT]: ""UA_Client_getEndpoints""  return ""BadSecureChannelIdInvalid"""	"#2844
+            opened on 26 Jun by
+            elitezhu"	"[OPCUA CLIENT]: ""UA_Client_getEndpoints""  return ""BadSecureChannelIdInvalid"""	https://github.com/open62541/open62541/issues/2844	elitezhu	
+1574231567-355	https://github.com/open62541/open62541/issues?page=5&q=is%3Aissue+is%3Aopen	Access control over endpoints	"#2829
+            opened on 18 Jun by
+            SebsSa"	Access control over endpoints	https://github.com/open62541/open62541/issues/2829		"Great, thanks! I'll give it a try right now."
+1574231800-410	https://github.com/open62541/open62541/issues?page=4&q=is%3Aissue+is%3Aopen	OPC UA Pub/Sub over MQTT	"#2865
+            opened on 3 Jul by
+            canadyre"	OPC UA Pub/Sub over MQTT	https://github.com/open62541/open62541/issues/2865	canadyre	
+1574231494-296	https://github.com/open62541/open62541/issues?page=5&q=is%3Aissue+is%3Aopen	NamespaceArray looks good but Namespaces object doesn't match it	"#2810
+            opened on 12 Jun by
+            cpipero"	NamespaceArray looks good but Namespaces object doesn't match it	https://github.com/open62541/open62541/issues/2810	cpipero	
+1574231923-519	https://github.com/open62541/open62541/issues?page=4&q=is%3Aissue+is%3Aopen	"Compiled nodesets do not initialize the variable type, UA Expert can not write to variable"	"#2924
+            opened on 25 Jul by
+            Pro"	"Compiled nodesets do not initialize the variable type, UA Expert can not write to variable"	https://github.com/open62541/open62541/issues/2924		"I posted a question on the UaExpert forum:
+
+https://forum.unified-automation.com/post11520.html
+Response by the support team:
+
+this is expected behavior. Typically when a node is being subscribed it already has a value (and a value always has a type). The DAView is obtaining the values datatype form the received value (received during first update). However if your node has no value the UaExpert will assume its type is ""NULL"", because it never has received a value. Reading the attribute (as suggested by you) makes no sense, because the node can change the valued datatype during runtime, so besides creating unnessecary load (by manually reading data type attribute), the datatype may still be different when being used. And of course you can write the value, just need to use the attribute window for writing.
+In any case you should take a close look at the Server, why is it having nodes that have no value? That makes not much sense.
+
+Summarized, every variable should be initialized with a specific value. The question now remains:
+
+@jpfr Should we automatically create a empty not-null dummy value in the nodeset compiler, or should we leave this up to the stack user?"
+1574231923-518	https://github.com/open62541/open62541/issues?page=4&q=is%3Aissue+is%3Aopen	"Compiled nodesets do not initialize the variable type, UA Expert can not write to variable"	"#2924
+            opened on 25 Jul by
+            Pro"	"Compiled nodesets do not initialize the variable type, UA Expert can not write to variable"	https://github.com/open62541/open62541/issues/2924		"From my point of view it does not make sense to initialize all values ""neutral"" just to support UaExpert.
+
+To solve this problem I would suggest two possible solutions:
+
+Introduction of a function to fill a node/subtree along hierarchical references with neutral values.
+Unified Automation bug report that UaExpert cannot write to null values with the datatype specified in the DateType attribute. This addresses also their (C++)-SDK especially when dealing with imported namespaces from XML-files."
+1574231357-214	https://github.com/open62541/open62541/issues?page=5&q=is%3Aissue+is%3Aopen	Support for handling subscriptions & monitored items externally	"#2788
+            opened on 5 Jun by
+            lkaino"	Support for handling subscriptions & monitored items externally	https://github.com/open62541/open62541/issues/2788	jpfr	
+1574231880-459	https://github.com/open62541/open62541/issues?page=4&q=is%3Aissue+is%3Aopen	Event-based Subscriber OPCUA pubsub	"#2890
+            opened on 17 Jul by
+            canadyre"	Event-based Subscriber OPCUA pubsub	https://github.com/open62541/open62541/issues/2890		"Thanks @canadyre!
+
+With "" you have to modify the code to work with 32 bits vs 64"" you mean that you can't use Double and everything that's based on 64 bits?
+
+Another question: do you have Rasberry Pi 3?
+
+Thanks!"
+1574231618-375	https://github.com/open62541/open62541/issues?page=5&q=is%3Aissue+is%3Aopen	"[OPCUA CLIENT]: ""UA_Client_getEndpoints""  return ""BadSecureChannelIdInvalid"""	"#2844
+            opened on 26 Jun by
+            elitezhu"	"[OPCUA CLIENT]: ""UA_Client_getEndpoints""  return ""BadSecureChannelIdInvalid"""	https://github.com/open62541/open62541/issues/2844		"@elitezhu in both cases, open62541 client as well as UAExpert client, can you share the Wireshark trace?
+Regards,
+
+@opcua-tsn-team-kalycito"
+1574231834-442	https://github.com/open62541/open62541/issues?page=4&q=is%3Aissue+is%3Aopen	Server does not persist the NodeId of a Node	"#2873
+            opened on 9 Jul by
+            GeorgeSellner"	Server does not persist the NodeId of a Node	https://github.com/open62541/open62541/issues/2873		"I went back and did a build with the 0.3 7fb7c22
+
+This was not an issue in 0.3"
+1574231693-392	https://github.com/open62541/open62541/issues?page=4&q=is%3Aissue+is%3Aopen	Remove multiple compiler flags for new architecture does not work	"#2850
+            opened on 28 Jun by
+            gbeuning"	Remove multiple compiler flags for new architecture does not work	https://github.com/open62541/open62541/issues/2850		"@Pro , your call. ??
+A possible workaround.
+
+Can you just append the ""inverse definition"" at the end of the definitions?
+
+Such as -Wnoerror to override -Werror."
+1574231374-224	https://github.com/open62541/open62541/issues?page=5&q=is%3Aissue+is%3Aopen	BadSessionIdInvalid from Client	"#2790
+            opened on 5 Jun by
+            MarkusWeinand"	BadSessionIdInvalid from Client	https://github.com/open62541/open62541/issues/2790		"Thanks for providing the dump.
+So I see two open connections.
+
+Did you manually remove some of the response messages?
+
+I only partially see the SecureChannel and session handshake.
+Only the second WriteRequest returns a failure in the provided dump:
+
+ServiceResult: 0x80270000 [BadSessionNotActivated]
+
+But even before that the second open session is returning this on the publish requests:
+
+ServiceResult: 0x800a0000 [BadTimeout]
+
+So it seems whatever causes the problem, it translates from one open session to the other.
+
+Have you tried to connect our client without the UAExpert at the same time?
+Sometimes the Siemens OPC UA servers get problems if many connections are open at the same time.
+We can continue debugging when we see all the response messages.
+
+In total, there seems to be a lot going on in the network. Is this wifi?"
+1574231710-395	https://github.com/open62541/open62541/issues?page=4&q=is%3Aissue+is%3Aopen	Single file distribution compilation terminated.	"#2855
+            opened on 29 Jun by
+            mdeva2"	Single file distribution compilation terminated.	https://github.com/open62541/open62541/issues/2855		"For the single file distribution only use open62541.h
+
+Or use the normal build and ‘make install’ to get the header files system wide."
+1574231533-331	https://github.com/open62541/open62541/issues?page=5&q=is%3Aissue+is%3Aopen	Problem when using multiple DataSetReader	"#2817
+            opened on 14 Jun by
+            Fischer-Thomas"	Problem when using multiple DataSetReader	https://github.com/open62541/open62541/issues/2817		
+1574231550-347	https://github.com/open62541/open62541/issues?page=5&q=is%3Aissue+is%3Aopen	Intel Compiler 18.1 crash when compiling amalgamation header/source under Linux	"#2823
+            opened on 18 Jun by
+            ebissonn"	Intel Compiler 18.1 crash when compiling amalgamation header/source under Linux	https://github.com/open62541/open62541/issues/2823		"We had to rewrote the namespace_0 initialization code to get it compiling under Intel 18.1
+
+See out PR
+
+#2824"
+1574231409-243	https://github.com/open62541/open62541/issues?page=5&q=is%3Aissue+is%3Aopen	Processing the message failed with error BadOutOfMemory	"#2792
+            opened on 5 Jun by
+            MarineKing5248"	Processing the message failed with error BadOutOfMemory	https://github.com/open62541/open62541/issues/2792		Could you check if you encounter the problem with the code in #2408 ?
+1574231652-386	https://github.com/open62541/open62541/issues?page=5&q=is%3Aissue+is%3Aopen	Performance measurement of Client/Server and Pub/Sub on VxWorks	"#2846
+            opened on 26 Jun by
+            kingalexsylvester"	Performance measurement of Client/Server and Pub/Sub on VxWorks	https://github.com/open62541/open62541/issues/2846	kingalexsylvester	
+1574231533-332	https://github.com/open62541/open62541/issues?page=5&q=is%3Aissue+is%3Aopen	Problem when using multiple DataSetReader	"#2817
+            opened on 14 Jun by
+            Fischer-Thomas"	Problem when using multiple DataSetReader	https://github.com/open62541/open62541/issues/2817		if(pConnection->readerGroupsSize == 1) {
+1574231834-439	https://github.com/open62541/open62541/issues?page=4&q=is%3Aissue+is%3Aopen	Server does not persist the NodeId of a Node	"#2873
+            opened on 9 Jul by
+            GeorgeSellner"	Server does not persist the NodeId of a Node	https://github.com/open62541/open62541/issues/2873	GeorgeSellner	
+1574231477-290	https://github.com/open62541/open62541/issues?page=5&q=is%3Aissue+is%3Aopen	Dependencies between CustomDataTypes in different UA_DataTypeArray not supported	"#2808
+            opened on 12 Jun by
+            TorbenD"	Dependencies between CustomDataTypes in different UA_DataTypeArray not supported	https://github.com/open62541/open62541/issues/2808		"That is a good idea and works if you have just dependencies between two data types.
+The problem is that we have one basic customDataType and two more that both are using this but have no dependencies to each other. Than the problem with the names for the functions occurs again."
+1574231914-500	https://github.com/open62541/open62541/issues?page=4&q=is%3Aissue+is%3Aopen	Generated custom data-types inside a method call	"#2920
+            opened on 24 Jul by
+            starki93"	Generated custom data-types inside a method call	https://github.com/open62541/open62541/issues/2920		ua_generate_nodeset_and_datatypes(
+1574231494-294	https://github.com/open62541/open62541/issues?page=5&q=is%3Aissue+is%3Aopen	NamespaceArray looks good but Namespaces object doesn't match it	"#2810
+            opened on 12 Jun by
+            cpipero"	NamespaceArray looks good but Namespaces object doesn't match it	https://github.com/open62541/open62541/issues/2810	cpipero	
+1574231652-387	https://github.com/open62541/open62541/issues?page=5&q=is%3Aissue+is%3Aopen	Performance measurement of Client/Server and Pub/Sub on VxWorks	"#2846
+            opened on 26 Jun by
+            kingalexsylvester"	Performance measurement of Client/Server and Pub/Sub on VxWorks	https://github.com/open62541/open62541/issues/2846		"@kingalexsylvester  Performance measurement in VxWorks isn’t yet in our open source roadmap. However, we have already taken performance measurements in Linux and can help you ramp up quickly in your environment with more details over a call. You can conne"
+1574231618-377	https://github.com/open62541/open62541/issues?page=5&q=is%3Aissue+is%3Aopen	"[OPCUA CLIENT]: ""UA_Client_getEndpoints""  return ""BadSecureChannelIdInvalid"""	"#2844
+            opened on 26 Jun by
+            elitezhu"	"[OPCUA CLIENT]: ""UA_Client_getEndpoints""  return ""BadSecureChannelIdInvalid"""	https://github.com/open62541/open62541/issues/2844		"@elitezhu We understand your constraint in sharing Wireshark traces. While we wait to receive your traces, could you share your open62541 client log with log configuration set at UA_LOGLEVEL=100 for both cases, i.e. the old PLC (working) and new PLC (not-"
+1574231567-354	https://github.com/open62541/open62541/issues?page=5&q=is%3Aissue+is%3Aopen	Access control over endpoints	"#2829
+            opened on 18 Jun by
+            SebsSa"	Access control over endpoints	https://github.com/open62541/open62541/issues/2829		You can write your own accesscontrol see plugins/ua_accesscontrol_default.c. In the activateSession callback you get the endpoint data und use it to control the access of the session.
+1574231800-430	https://github.com/open62541/open62541/issues?page=4&q=is%3Aissue+is%3Aopen	OPC UA Pub/Sub over MQTT	"#2865
+            opened on 3 Jul by
+            canadyre"	OPC UA Pub/Sub over MQTT	https://github.com/open62541/open62541/issues/2865		"Hello @sohailmushtaq,
+
+thank you for the answer. I see an issue with UA_ENABLE_PUBSUB_ETH_UADP . For the moment, as far as I see, UA_ENABLE_PUBSUB_ETH_UADP is available only for linux.
+
+I am planing to use the code with freertos. But as first, I tried to use it on windows. So I guess I have a long journey to test it :)"
+1574231477-292	https://github.com/open62541/open62541/issues?page=5&q=is%3Aissue+is%3Aopen	Dependencies between CustomDataTypes in different UA_DataTypeArray not supported	"#2808
+            opened on 12 Jun by
+            TorbenD"	Dependencies between CustomDataTypes in different UA_DataTypeArray not supported	https://github.com/open62541/open62541/issues/2808		"Yes that's right, but bsd2 is type_b and bsd3 is type_c"
+1574231898-479	https://github.com/open62541/open62541/issues?page=4&q=is%3Aissue+is%3Aopen	Compile freeRTOS with open62541 errors	"#2893
+            opened on 18 Jul by
+            mrburen121"	Compile freeRTOS with open62541 errors	https://github.com/open62541/open62541/issues/2893		"I solved the errors. Thank you for your help. I added some missing parameters to my header file.
+When I add #2511 the functions:
+void vApplicationMallocFailedHook(){
+	for(;;){
+		vTaskDelay(1000);
+	}
+}
+
+void vApplicationStackOverflowHook( TaskHandle_t xTask, char *pcTaskName ){
+	for(;;){
+		vTaskDelay(1000);
+	}
+}
+
+I get the error: undefined reference to `pdMS_TO_TICKS'. Does this mean I have some timing issues?
+Also in the open62541.h file that I generated via cmake there is no function called
+
+UA_ServerConfig_new_customBuffer. Is this changed in the newest version to UA_ServerConfig_setMinimalCustomBuffer?"
+1574231898-484	https://github.com/open62541/open62541/issues?page=4&q=is%3Aissue+is%3Aopen	Compile freeRTOS with open62541 errors	"#2893
+            opened on 18 Jul by
+            mrburen121"	Compile freeRTOS with open62541 errors	https://github.com/open62541/open62541/issues/2893		"Oke, thank you. It seems to be a memory problem.
+
+
+Could this be solved when I implement realloc and calloc? I know this is not a open62541 problem but I hope you can help me. Do you have a sample of those implementations? I can't find one for heap 3 the freertos V10 demo folder."
+1574231460-270	https://github.com/open62541/open62541/issues?page=5&q=is%3Aissue+is%3Aopen	"PubSub Publisher example, not setting the DataSetMetaData"	"#2800
+            opened on 8 Jun by
+            cpipero"	"PubSub Publisher example, not setting the DataSetMetaData"	https://github.com/open62541/open62541/issues/2800		"@cpipero thanks for your feedback and detailed reports. As you already recognized, the pubsub metadata field is currently not supported. The DataSetMetaData should be created and updated by the pubsub core without any configuration.
+One short comment to y"
+1574231898-485	https://github.com/open62541/open62541/issues?page=4&q=is%3Aissue+is%3Aopen	Compile freeRTOS with open62541 errors	"#2893
+            opened on 18 Jul by
+            mrburen121"	Compile freeRTOS with open62541 errors	https://github.com/open62541/open62541/issues/2893		"Hey guys, I am new to github so apologies if I am in the wrong thread. I am trying to set up open62541 as a opc server on stm F207. The tutorial for creating open62541.c and open62541.h works fine but after integrating these files into my stmCubeIDE Project i have about 30 compile errors left. I am pretty sure that I miss an include or something and maybe someone could give me a hint.
+I am working with the latest master-branch, maybe this is my error? Thanks in advance for any help.
+The Pictures shows the compile errors I have left:"
+1574231898-467	https://github.com/open62541/open62541/issues?page=4&q=is%3Aissue+is%3Aopen	Compile freeRTOS with open62541 errors	"#2893
+            opened on 18 Jul by
+            mrburen121"	Compile freeRTOS with open62541 errors	https://github.com/open62541/open62541/issues/2893	mrburen121	
+1574231494-299	https://github.com/open62541/open62541/issues?page=5&q=is%3Aissue+is%3Aopen	NamespaceArray looks good but Namespaces object doesn't match it	"#2810
+            opened on 12 Jun by
+            cpipero"	NamespaceArray looks good but Namespaces object doesn't match it	https://github.com/open62541/open62541/issues/2810		"Yes, so far the Namespaces object is not ""live"".
+
+It may be generated for a build with ""full"" information model if the object instance is defined explicitly in Nodeset2.xml. But then it will be just the hull of an object that does not change as namespaces are added.
+Contributors are invited to chip in here.
+
+If nobody steps up, this looks like a feature that has to wait until we are done with the ""lower"", i.e. embedded, server profiles."
+1574231290-203	https://github.com/open62541/open62541/issues?page=5&q=is%3Aissue+is%3Aopen	Trying to read variable value periodically and asynchronously	"#2773
+            opened on 29 May by
+            tuxroger"	Trying to read variable value periodically and asynchronously	https://github.com/open62541/open62541/issues/2773		"Hi,
+
+In general, in OPC UA, if your data is not changing for long time (can be just data is not changing, or deadband settings filter them out), and you want anyway periodically receive latest values, then client can call method Objects/Server/ResendData.
+
+It takes as argument subscription ID, and after calling it publish response(s) will be sent to the client with up to date values.
+
+I tried to run this with the server_ctt application in open62541, but method call returns BadInternalError, probably it is not implemented yet.
+
+Unified Automation demo server handles it properly (verified by Wireshark)."
+1574231477-280	https://github.com/open62541/open62541/issues?page=5&q=is%3Aissue+is%3Aopen	Dependencies between CustomDataTypes in different UA_DataTypeArray not supported	"#2808
+            opened on 12 Jun by
+            TorbenD"	Dependencies between CustomDataTypes in different UA_DataTypeArray not supported	https://github.com/open62541/open62541/issues/2808	jpfr	
+1574231516-306	https://github.com/open62541/open62541/issues?page=5&q=is%3Aissue+is%3Aopen	How to create a certification and send this to server	"#2816
+            opened on 14 Jun by
+            AndyarcherReset"	How to create a certification and send this to server	https://github.com/open62541/open62541/issues/2816	AndyarcherReset	
+1574231880-451	https://github.com/open62541/open62541/issues?page=4&q=is%3Aissue+is%3Aopen	Event-based Subscriber OPCUA pubsub	"#2890
+            opened on 17 Jul by
+            canadyre"	Event-based Subscriber OPCUA pubsub	https://github.com/open62541/open62541/issues/2890	sohailmushtaq	
+1574231914-507	https://github.com/open62541/open62541/issues?page=4&q=is%3Aissue+is%3Aopen	Generated custom data-types inside a method call	"#2920
+            opened on 24 Jul by
+            starki93"	Generated custom data-types inside a method call	https://github.com/open62541/open62541/issues/2920		UA_Point *p = (UA_Point *)out.data;
+1574231652-388	https://github.com/open62541/open62541/issues?page=5&q=is%3Aissue+is%3Aopen	Performance measurement of Client/Server and Pub/Sub on VxWorks	"#2846
+            opened on 26 Jun by
+            kingalexsylvester"	Performance measurement of Client/Server and Pub/Sub on VxWorks	https://github.com/open62541/open62541/issues/2846		"I calculated Min/Max/Avg by using simple clock_gettime( ) and counter loopback application, it seems to work fine and I am trying to validate the values on hardware using the below logic:
+I created a loop app like below:
+N1(Pub)>----------------->|N2(Sub)
+
+-----|------------------------|--------
+
+(Counter++)--------------- | if(diffValue){toggle_Pin0}------>Oscilloscope
+
+-----|------------------------|--------
+
+N1(Sub)<-----------------<|N2(Pub)
+I shall share the snippet once this is validated. @opcua-tsn-team-kalycito I will reach to you if help needed."
+1574231914-499	https://github.com/open62541/open62541/issues?page=4&q=is%3Aissue+is%3Aopen	Generated custom data-types inside a method call	"#2920
+            opened on 24 Jul by
+            starki93"	Generated custom data-types inside a method call	https://github.com/open62541/open62541/issues/2920		
+1574231340-212	https://github.com/open62541/open62541/issues?page=5&q=is%3Aissue+is%3Aopen	Updating nodes (deleting and adding nodes) during runtime from dedicated thread	"#2783
+            opened on 4 Jun by
+            Nik654"	Updating nodes (deleting and adding nodes) during runtime from dedicated thread	https://github.com/open62541/open62541/issues/2783		"Just to check if i got you right @ccvca
+What you are suggesting is to create a mutex in my code which will make access to open62541 SDK serialized (thread-safe)?
+I should do something like this:
+std::mutex open62541Mutex;
+
+THREAD 0: Thread where server loop is running
+UA_StatusCode retval = UA_Server_run_startup(server);
+if(retval != UA_STATUSCODE_GOOD)
+    return retval;
+while(*running) {
+    open62541Mutex.lock();
+    UA_Server_run_iterate(server, true);
+    open62541Mutex.unlock();
+}
+return UA_Server_run_shutdown(server);
+
+THREAD 1: Thread where delete and add of nodes is being called
+open62541Mutex.lock();
+UA_Server_deleteNode(server, requestedNewNodeId, deleteReferences);
+UA_Server_addObjectNode(server, requestedNewNodeId, parentNodeId, referenceTypeId, browseName, typeDefinition, attr, nodeContext, outNewNodeId);
+UA_Server_addVariableNode(server, requestedNewNodeId, parentNodeId, referenceTypeId, browseName, typeDefinition, attr, nodeContext, outNewNodeId);
+UA_Server_setVariableNode_dataSource(server, requestedNewNodeId, dataSource);
+open62541Mutex.unlock();"
+1574231910-492	https://github.com/open62541/open62541/issues?page=4&q=is%3Aissue+is%3Aopen	Get all changed monitored items of subscription at the same time	"#2913
+            opened on 23 Jul by
+            je1h"	Get all changed monitored items of subscription at the same time	https://github.com/open62541/open62541/issues/2913	schroeder-	
+1574231618-376	https://github.com/open62541/open62541/issues?page=5&q=is%3Aissue+is%3Aopen	"[OPCUA CLIENT]: ""UA_Client_getEndpoints""  return ""BadSecureChannelIdInvalid"""	"#2844
+            opened on 26 Jun by
+            elitezhu"	"[OPCUA CLIENT]: ""UA_Client_getEndpoints""  return ""BadSecureChannelIdInvalid"""	https://github.com/open62541/open62541/issues/2844		"@opcua-tsn-team-kalycito In the customer's plant, there's 3 same type PLCs. And two is existed, another is new added. The open62541 can't get the endpoint from the new one, but other two is OK. For the new one, UaExpert and C# core OPCUA lib can get the e"
+1574231357-218	https://github.com/open62541/open62541/issues?page=5&q=is%3Aissue+is%3Aopen	Support for handling subscriptions & monitored items externally	"#2788
+            opened on 5 Jun by
+            lkaino"	Support for handling subscriptions & monitored items externally	https://github.com/open62541/open62541/issues/2788		"I don't have measurements on the CPU overhead, but one can assume that calculating hash for long strings is considerably slower compared to passing a monitoredItem pointer.
+In our system all values are produced at fixed intervals: 10 ms, 100 ms and 1000 ms. I know the producing interval for each value, so if a client requests the item at a faster interval than it is being produced, I can revise the interval.
+If a value is produced at 10 ms rate, but a client requests it at 1000 ms rate, I will sample it at 1000 ms. According to Nyquist theorem, the client would have to sample the value at half the interval the value is produced, which is wasting CPU cycles on the server.
+Another example:
+
+We have a value produced at 10 ms rate. Two clients connect to the server, one monitors the value at 10 ms and the other at 100 ms. Every 100 ms I would need to read the value from my data store twice, to serve both clients. If it would be possible for me to manage the monitored items myself, I would always sample the value once, but every tenth time I would provide the sample also for the slower client.
+These optimizations might sound small, but in our system we have multiple connected clients with each one reading over 2000 nodes per second. When scaling up the CPU overhead starts to add up."
+1574231357-216	https://github.com/open62541/open62541/issues?page=5&q=is%3Aissue+is%3Aopen	Support for handling subscriptions & monitored items externally	"#2788
+            opened on 5 Jun by
+            lkaino"	Support for handling subscriptions & monitored items externally	https://github.com/open62541/open62541/issues/2788	jpfr	
+1574231340-207	https://github.com/open62541/open62541/issues?page=5&q=is%3Aissue+is%3Aopen	Updating nodes (deleting and adding nodes) during runtime from dedicated thread	"#2783
+            opened on 4 Jun by
+            Nik654"	Updating nodes (deleting and adding nodes) during runtime from dedicated thread	https://github.com/open62541/open62541/issues/2783	jpfr	
+1574231426-245	https://github.com/open62541/open62541/issues?page=5&q=is%3Aissue+is%3Aopen	Can report.ci be helpful?	"#2793
+            opened on 6 Jun by
+            escherstair"	Can report.ci be helpful?	https://github.com/open62541/open62541/issues/2793	escherstair	
+1574231567-356	https://github.com/open62541/open62541/issues?page=5&q=is%3Aissue+is%3Aopen	Access control over endpoints	"#2829
+            opened on 18 Jun by
+            SebsSa"	Access control over endpoints	https://github.com/open62541/open62541/issues/2829		"Unfortunately my abilities are not enough to understand the whole ""code"". Not to mention to find an answer to my question.
+I have rummaged a bit and tried a lot but unfortunately I didn't find a solution...
+Is there an example or a simple solution?
+
+Something like :
+
+..endpoint[0].setAccessLevel..
+   for(int i = 0; i < config->endpointsSize; i++) 
+    {
+    if(config->endpoints[i].endpointDescription.securityMode == UA_MESSAGESECURITYMODE_NONE) 
+        {   
+           config->endpoints[i].setAccessLevel = ... (0,1,2)(readonly,writeRead,...)
+        }
+    }
+
+!This is no real code!
+It would be great if someone could recommend a helpful link to me. Thank you once in advance"
+1574231477-277	https://github.com/open62541/open62541/issues?page=5&q=is%3Aissue+is%3Aopen	Dependencies between CustomDataTypes in different UA_DataTypeArray not supported	"#2808
+            opened on 12 Jun by
+            TorbenD"	Dependencies between CustomDataTypes in different UA_DataTypeArray not supported	https://github.com/open62541/open62541/issues/2808	TorbenD	
+1574231533-324	https://github.com/open62541/open62541/issues?page=5&q=is%3Aissue+is%3Aopen	Problem when using multiple DataSetReader	"#2817
+            opened on 14 Jun by
+            Fischer-Thomas"	Problem when using multiple DataSetReader	https://github.com/open62541/open62541/issues/2817		
+1574231533-339	https://github.com/open62541/open62541/issues?page=5&q=is%3Aissue+is%3Aopen	Problem when using multiple DataSetReader	"#2817
+            opened on 14 Jun by
+            Fischer-Thomas"	Problem when using multiple DataSetReader	https://github.com/open62541/open62541/issues/2817		
+1574231800-425	https://github.com/open62541/open62541/issues?page=4&q=is%3Aissue+is%3Aopen	OPC UA Pub/Sub over MQTT	"#2865
+            opened on 3 Jul by
+            canadyre"	OPC UA Pub/Sub over MQTT	https://github.com/open62541/open62541/issues/2865		"Hi,
+
+Thank you for helping me find that @sohailmushtaq . So when running these examples with mqtt, do you still run tutorial_pubsub_publish, tutorial_pubsub_subscribe and then use tutorial_pubsub_mqtt as the broker?
+
+Thanks!"
+1574231903-490	https://github.com/open62541/open62541/issues?page=4&q=is%3Aissue+is%3Aopen	Integrate CTT into CI	"#2894
+            opened on 18 Jul by
+            Pro"	Integrate CTT into CI	https://github.com/open62541/open62541/issues/2894	Pro	
+1574231357-215	https://github.com/open62541/open62541/issues?page=5&q=is%3Aissue+is%3Aopen	Support for handling subscriptions & monitored items externally	"#2788
+            opened on 5 Jun by
+            lkaino"	Support for handling subscriptions & monitored items externally	https://github.com/open62541/open62541/issues/2788	lkaino	
+1574231533-313	https://github.com/open62541/open62541/issues?page=5&q=is%3Aissue+is%3Aopen	Problem when using multiple DataSetReader	"#2817
+            opened on 14 Jun by
+            Fischer-Thomas"	Problem when using multiple DataSetReader	https://github.com/open62541/open62541/issues/2817	opcua-tsn-team-kalycito	
+1574231533-318	https://github.com/open62541/open62541/issues?page=5&q=is%3Aissue+is%3Aopen	Problem when using multiple DataSetReader	"#2817
+            opened on 14 Jun by
+            Fischer-Thomas"	Problem when using multiple DataSetReader	https://github.com/open62541/open62541/issues/2817		
+1574231357-217	https://github.com/open62541/open62541/issues?page=5&q=is%3Aissue+is%3Aopen	Support for handling subscriptions & monitored items externally	"#2788
+            opened on 5 Jun by
+            lkaino"	Support for handling subscriptions & monitored items externally	https://github.com/open62541/open62541/issues/2788		"This is inefficient when using other node ID types than numeric as a hash for the node ID needs to be calculated on every sample.
+
+Hmm okay. Do you have some numbers on the increase in the CPU load?
+
+That would be important to know to make a tradeoff decision.
+
+When the monitored items are sampled from the server thread context, I cannot guarantee that each sample is recorded (assuming that the sampling interval is equal to the period on which the value is updated).
+
+In general, to make sure you get all the updates, make the sampling interval just a bit faster than the update rate. Note that many clients can monitor the same value. All with different intervals and time offsets from the last sample.
+What you propose would introduce a tight coupling between data generation and the clients. I don't think it is a good idea.
+Also, the overhead can be quite large. If a process generates values at many kHz and a client monitors at 1/s, we'd have to check all the time when to actually take the sample. Or overwrite intermediate samples."
+1574231914-508	https://github.com/open62541/open62541/issues?page=4&q=is%3Aissue+is%3Aopen	Generated custom data-types inside a method call	"#2920
+            opened on 24 Jul by
+            starki93"	Generated custom data-types inside a method call	https://github.com/open62541/open62541/issues/2920		"At CMake file i used the following code:
+option(UA_ENABLE_PUBSUB """" ON)
+set(UA_NAMESPACE_ZERO FULL CACHE STRING """" FORCE)
+
+set(open62541_TOOLS_DIR ""${CMAKE_CURRENT_SOURCE_DIR}/open62541/tools"")
+set(open62541_NODESET_DIR ""${CMAKE_CURRENT_SOURCE_DIR}/open62541/deps/ua-nodeset"")
+
+
+add_subdirectory(open62541)
+
+ua_generate_nodeset_and_datatypes(
+        NAME ""yr""
+        FILE_CSV ""${CMAKE_CURRENT_SOURCE_DIR}/model/yrModel.csv""
+        FILE_BSD ""${CMAKE_CURRENT_SOURCE_DIR}/model/yr.Types.bsd""
+        NAMESPACE_IDX 2
+        FILE_NS ""${CMAKE_CURRENT_SOURCE_DIR}/model/yr.NodeSet2.xml""
+        OUTPUT_DIR ""${CMAKE_CURRENT_BINARY_DIR}/open62541/src_generated/open62541""
+        INTERNAL
+)
+The method is added like this:
+static void
+addMethod(UA_Server *server) {
+    UA_Argument inputArgument;
+    UA_Argument_init(&inputArgument);
+
+    inputArgument.description = UA_LOCALIZEDTEXT((char*)""en-US"", (char*)""set tool"");
+    inputArgument.name = UA_STRING((char*)""input"");
+    inputArgument.dataType = UA_TYPES_YR[UA_TYPES_YR_TOOLSTATE].typeId;
+    inputArgument.valueRank = UA_VALUERANK_ONE_DIMENSION;
+
+    UA_MethodAttributes helloAttr = UA_MethodAttributes_default;
+    helloAttr.description = UA_LOCALIZEDTEXT((char*)""en-US"",(char*)""set tool"");
+    helloAttr.displayName = UA_LOCALIZEDTEXT((char*)""en-US"",(char*)""set tool"");
+    helloAttr.executable = true;
+    helloAttr.userExecutable = true;
+
+    UA_Server_addMethodNode(server, UA_NODEID_NUMERIC(1,1000),
+                            UA_NODEID_NUMERIC(0, UA_NS0ID_OBJECTSFOLDER),
+                            UA_NODEID_NUMERIC(0, UA_NS0ID_HASORDEREDCOMPONENT),
+                            UA_QUALIFIEDNAME(1, (char*)""test method""),
+                            helloAttr, &methodCallback,
+                            1, &inputArgument, 0, nullptr, nullptr, nullptr);
+}
+And the callback is:
+static UA_StatusCode
+methodCallback(UA_Server *server,
+                         const UA_NodeId *sessionId, void *sessionHandle,
+                         const UA_NodeId *methodId, void *methodContext,
+                         const UA_NodeId *objectId, void *objectContext,
+                         size_t inputSize, const UA_Variant *input,
+                         size_t outputSize, UA_Variant *output) {
+
+    printf(""received command with input size:%lu \n"", inputSize);
+
+    for(size_t i = 0; i < inputSize; i++) {
+        printf(""typename: %s\n"", input[i].type->typeName);
+    }
+
+    return UA_STATUSCODE_GOOD;
+}
+I get the following output if i call this method with an arraysize 3:
+[2019-07-25 09:18:35.762 (UTC+0200)] trace/network	Connection 5 | Activity on the socket
+[2019-07-25 09:18:35.762 (UTC+0200)] trace/network	Connection 5 | Received a packet.
+[2019-07-25 09:18:35.762 (UTC+0200)] trace/channel	Connection 5 | SecureChannel 1 | Decrypting chunk
+[2019-07-25 09:18:35.762 (UTC+0200)] trace/channel	Connection 5 | SecureChannel 1 | Chunk size before and after decryption: 168, 168
+[2019-07-25 09:18:35.762 (UTC+0200)] trace/channel	Connection 5 | SecureChannel 1 | Decrypted and verified chunk with request id 57 and sequence number 107
+[2019-07-25 09:18:35.762 (UTC+0200)] trace/channel	Connection 5 | SecureChannel 1 | Sequence Number processed: 107
+[2019-07-25 09:18:35.762 (UTC+0200)] trace/channel	Connection 5 | SecureChannel 1 | Process a MSG
+[2019-07-25 09:18:35.762 (UTC+0200)] debug/session	Connection 5 | SecureChannel 1 | Session ns=1;g=cfd85efa-5d9d-cd24-bddb-5dd518919959 | Processing CallRequest
+received command with input size:1 
+typename: ExtensionObject"
+1574231283-200	https://github.com/open62541/open62541/issues?page=5&q=is%3Aissue+is%3Aopen	Subscriber implementation not subscribing to timestamp?	"#2771
+            opened on 29 May by
+            theresa95"	Subscriber implementation not subscribing to timestamp?	https://github.com/open62541/open62541/issues/2771		@theresa95 Use the TranslateBrowsePathsToNodeIds Service to find the NodeId
+1574231800-432	https://github.com/open62541/open62541/issues?page=4&q=is%3Aissue+is%3Aopen	OPC UA Pub/Sub over MQTT	"#2865
+            opened on 3 Jul by
+            canadyre"	OPC UA Pub/Sub over MQTT	https://github.com/open62541/open62541/issues/2865		"Hi @kusumy, currently I'm writing the thesis it will be ready not before the first week of October. You can contact me and I will send you my final report.
+Regards,
+Sohail"
+1574231652-384	https://github.com/open62541/open62541/issues?page=5&q=is%3Aissue+is%3Aopen	Performance measurement of Client/Server and Pub/Sub on VxWorks	"#2846
+            opened on 26 Jun by
+            kingalexsylvester"	Performance measurement of Client/Server and Pub/Sub on VxWorks	https://github.com/open62541/open62541/issues/2846	opcua-tsn-team-kalycito	
+1574231460-263	https://github.com/open62541/open62541/issues?page=5&q=is%3Aissue+is%3Aopen	"PubSub Publisher example, not setting the DataSetMetaData"	"#2800
+            opened on 8 Jun by
+            cpipero"	"PubSub Publisher example, not setting the DataSetMetaData"	https://github.com/open62541/open62541/issues/2800		@andreasebner Can you comment on this?
+1574231460-254	https://github.com/open62541/open62541/issues?page=5&q=is%3Aissue+is%3Aopen	"PubSub Publisher example, not setting the DataSetMetaData"	"#2800
+            opened on 8 Jun by
+            cpipero"	"PubSub Publisher example, not setting the DataSetMetaData"	https://github.com/open62541/open62541/issues/2800	cpipero	
+1574231618-366	https://github.com/open62541/open62541/issues?page=5&q=is%3Aissue+is%3Aopen	"[OPCUA CLIENT]: ""UA_Client_getEndpoints""  return ""BadSecureChannelIdInvalid"""	"#2844
+            opened on 26 Jun by
+            elitezhu"	"[OPCUA CLIENT]: ""UA_Client_getEndpoints""  return ""BadSecureChannelIdInvalid"""	https://github.com/open62541/open62541/issues/2844	opcua-tsn-team-kalycito	
+1574231914-503	https://github.com/open62541/open62541/issues?page=4&q=is%3Aissue+is%3Aopen	Generated custom data-types inside a method call	"#2920
+            opened on 24 Jul by
+            starki93"	Generated custom data-types inside a method call	https://github.com/open62541/open62541/issues/2920		"How did you try to access your custom datatype?
+If you followed the tutorial (which was written by me), you will end up with a NodeSet2.xml and a .bsd and .csv file.
+You need these files as input for the nodeset compiler macro. An example is given here:
+
+  
+    
+      open62541/examples/nodeset/CMakeLists.txt
+    
+    
+         Line 46
+      in
+      b0971ef
+    
+    
+    
+    
+
+        
+          
+           ua_generate_nodeset_and_datatypes( 
+        
+    
+  
+
+
+You normally need the FULL NS0 otherwise some parent nodes will be missing.
+The macro will generate the necessary structs which you can directly use in the code, i.e., UA_ToolState.
+E.g. see this code example here:
+
+
+  
+    
+      open62541/examples/nodeset/server_testnodeset.c
+    
+    
+         Line 47
+      in
+      b0971ef
+    
+    
+    
+    
+
+        
+          
+           UA_Point *p = (UA_Point *)out.data; 
+        
+    
+  
+
+
+Does that answer your question?"
+1574231460-265	https://github.com/open62541/open62541/issues?page=5&q=is%3Aissue+is%3Aopen	"PubSub Publisher example, not setting the DataSetMetaData"	"#2800
+            opened on 8 Jun by
+            cpipero"	"PubSub Publisher example, not setting the DataSetMetaData"	https://github.com/open62541/open62541/issues/2800		Fixed in #2802. Can you confirm @cpipero ?
+1574231533-337	https://github.com/open62541/open62541/issues?page=5&q=is%3Aissue+is%3Aopen	Problem when using multiple DataSetReader	"#2817
+            opened on 14 Jun by
+            Fischer-Thomas"	Problem when using multiple DataSetReader	https://github.com/open62541/open62541/issues/2817		
+1574231618-380	https://github.com/open62541/open62541/issues?page=5&q=is%3Aissue+is%3Aopen	"[OPCUA CLIENT]: ""UA_Client_getEndpoints""  return ""BadSecureChannelIdInvalid"""	"#2844
+            opened on 26 Jun by
+            elitezhu"	"[OPCUA CLIENT]: ""UA_Client_getEndpoints""  return ""BadSecureChannelIdInvalid"""	https://github.com/open62541/open62541/issues/2844		"@elitezhu, Thanks for the Wirehark trace, can you also share the client logs with log configuration set at UA_LOGLEVEL=100 for open62541 client in both cases? One case where open62541 client is connecting successfully with the older PLC and the other case"
+1574231693-393	https://github.com/open62541/open62541/issues?page=4&q=is%3Aissue+is%3Aopen	Remove multiple compiler flags for new architecture does not work	"#2850
+            opened on 28 Jun by
+            gbeuning"	Remove multiple compiler flags for new architecture does not work	https://github.com/open62541/open62541/issues/2850		"That could be a workaround in some cases. However if you need to (cross)compile using an older compiler that is unaware of certain flags it typically also doesn't know the 'inverse' flags...
+
+Just for your info, following seems to work properly (CMake version 3.5.1 on Ubuntu 16.04):
+GET_PROPERTY(ua_architecture_remove_definitions GLOBAL PROPERTY UA_ARCHITECTURE_REMOVE_DEFINITIONS)
+if (NOT ""${ua_architecture_remove_definitions}"" STREQUAL """")
+  remove_definitions(${ua_architecture_remove_definitions})
+endif(NOT ""${ua_architecture_remove_definitions}"" STREQUAL """")
+
+So remove_definitions() seems to work also with a list input."
+1574231477-291	https://github.com/open62541/open62541/issues?page=5&q=is%3Aissue+is%3Aopen	Dependencies between CustomDataTypes in different UA_DataTypeArray not supported	"#2808
+            opened on 12 Jun by
+            TorbenD"	Dependencies between CustomDataTypes in different UA_DataTypeArray not supported	https://github.com/open62541/open62541/issues/2808		"Assume you have three bsd files: bsd1, bsd2, bsd3
+
+And bsd2 and bsd3 define the same datatype that relies on a type from bsd1.
+
+bsd1: type_a
+bsd2: type_b (relies on type_a)
+bsd3: type_b (relies on type_a)
+
+Does this describe the situation?"
+1574231567-349	https://github.com/open62541/open62541/issues?page=5&q=is%3Aissue+is%3Aopen	Access control over endpoints	"#2829
+            opened on 18 Jun by
+            SebsSa"	Access control over endpoints	https://github.com/open62541/open62541/issues/2829	SebsSa	
+1574231409-238	https://github.com/open62541/open62541/issues?page=5&q=is%3Aissue+is%3Aopen	Processing the message failed with error BadOutOfMemory	"#2792
+            opened on 5 Jun by
+            MarineKing5248"	Processing the message failed with error BadOutOfMemory	https://github.com/open62541/open62541/issues/2792	jpfr	
+1574231477-286	https://github.com/open62541/open62541/issues?page=5&q=is%3Aissue+is%3Aopen	Dependencies between CustomDataTypes in different UA_DataTypeArray not supported	"#2808
+            opened on 12 Jun by
+            TorbenD"	Dependencies between CustomDataTypes in different UA_DataTypeArray not supported	https://github.com/open62541/open62541/issues/2808		"Thanks for the answer.
+The problem is that if the DataTypes are in both UA_DataTypeArray you get different decoding and encoding functions, but they both have the same name:
+/* IdEnum */
+static UA_INLINE size_t
+UA_IdEnum_calcSizeBinary(const UA_IdEnum *src) {
+    return UA_calcSizeBinary(src, &UA_LIFECYCLEENTRY[UA_LIFECYCLEENTRY_IDENUM]);
+}
+static UA_INLINE UA_StatusCode
+UA_IdEnum_encodeBinary(const UA_IdEnum *src, UA_Byte **bufPos, const UA_Byte *bufEnd) {
+    return UA_encodeBinary(src, &UA_LIFECYCLEENTRY[UA_LIFECYCLEENTRY_IDENUM], bufPos, &bufEnd, NULL, NULL);
+}
+static UA_INLINE UA_StatusCode
+UA_IdEnum_decodeBinary(const UA_ByteString *src, size_t *offset, UA_IdEnum *dst) {
+    return UA_decodeBinary(src, offset, dst, &UA_LIFECYCLEENTRY[UA_LIFECYCLEENTRY_IDENUM], NULL);
+}
+
+/* Identification */
+static UA_INLINE size_t
+UA_Identification_calcSizeBinary(const UA_Identification *src) {
+    return UA_calcSizeBinary(src, &UA_LIFECYCLEENTRY[UA_LIFECYCLEENTRY_IDENTIFICATION]);
+}
+static UA_INLINE UA_StatusCode
+UA_Identification_encodeBinary(const UA_Identification *src, UA_Byte **bufPos, const UA_Byte *bufEnd) {
+    return UA_encodeBinary(src, &UA_LIFECYCLEENTRY[UA_LIFECYCLEENTRY_IDENTIFICATION], bufPos, &bufEnd, NULL, NULL);
+}
+static UA_INLINE UA_StatusCode
+UA_Identification_decodeBinary(const UA_ByteString *src, size_t *offset, UA_Identification *dst) {
+    return UA_decodeBinary(src, offset, dst, &UA_LIFECYCLEENTRY[UA_LIFECYCLEENTRY_IDENTIFICATION], NULL);
+}
+
+/* IdEnum */
+static UA_INLINE size_t
+UA_IdEnum_calcSizeBinary(const UA_IdEnum *src) {
+    return UA_calcSizeBinary(src, &UA_IDENTIFICATION[UA_IDENTIFICATION_IDENUM]);
+}
+static UA_INLINE UA_StatusCode
+UA_IdEnum_encodeBinary(const UA_IdEnum *src, UA_Byte **bufPos, const UA_Byte *bufEnd) {
+    return UA_encodeBinary(src, &UA_IDENTIFICATION[UA_IDENTIFICATION_IDENUM], bufPos, &bufEnd, NULL, NULL);
+}
+static UA_INLINE UA_StatusCode
+UA_IdEnum_decodeBinary(const UA_ByteString *src, size_t *offset, UA_IdEnum *dst) {
+    return UA_decodeBinary(src, offset, dst, &UA_IDENTIFICATION[UA_IDENTIFICATION_IDENUM], NULL);
+}
+
+/* Identification */
+static UA_INLINE size_t
+UA_Identification_calcSizeBinary(const UA_Identification *src) {
+    return UA_calcSizeBinary(src, &UA_IDENTIFICATION[UA_IDENTIFICATION_IDENTIFICATION]);
+}
+static UA_INLINE UA_StatusCode
+UA_Identification_encodeBinary(const UA_Identification *src, UA_Byte **bufPos, const UA_Byte *bufEnd) {
+    return UA_encodeBinary(src, &UA_IDENTIFICATION[UA_IDENTIFICATION_IDENTIFICATION], bufPos, &bufEnd, NULL, NULL);
+}
+static UA_INLINE UA_StatusCode
+UA_Identification_decodeBinary(const UA_ByteString *src, size_t *offset, UA_Identification *dst) {
+    return UA_decodeBinary(src, offset, dst, &UA_IDENTIFICATION[UA_IDENTIFICATION_IDENTIFICATION], NULL);
+}
+
+So it is not possible to load both customDataTypes"
+1574231618-374	https://github.com/open62541/open62541/issues?page=5&q=is%3Aissue+is%3Aopen	"[OPCUA CLIENT]: ""UA_Client_getEndpoints""  return ""BadSecureChannelIdInvalid"""	"#2844
+            opened on 26 Jun by
+            elitezhu"	"[OPCUA CLIENT]: ""UA_Client_getEndpoints""  return ""BadSecureChannelIdInvalid"""	https://github.com/open62541/open62541/issues/2844	elitezhu	
+1574231391-226	https://github.com/open62541/open62541/issues?page=5&q=is%3Aissue+is%3Aopen	UA_server_browse maxrefs	"#2791
+            opened on 5 Jun by
+            etm"	UA_server_browse maxrefs	https://github.com/open62541/open62541/issues/2791	jpfr	
+1574231914-502	https://github.com/open62541/open62541/issues?page=4&q=is%3Aissue+is%3Aopen	Generated custom data-types inside a method call	"#2920
+            opened on 24 Jul by
+            starki93"	Generated custom data-types inside a method call	https://github.com/open62541/open62541/issues/2920		UA_Point *p = (UA_Point *)out.data;
+1574231898-469	https://github.com/open62541/open62541/issues?page=4&q=is%3Aissue+is%3Aopen	Compile freeRTOS with open62541 errors	"#2893
+            opened on 18 Jul by
+            mrburen121"	Compile freeRTOS with open62541 errors	https://github.com/open62541/open62541/issues/2893	mrburen121	
+1574231800-418	https://github.com/open62541/open62541/issues?page=4&q=is%3Aissue+is%3Aopen	OPC UA Pub/Sub over MQTT	"#2865
+            opened on 3 Jul by
+            canadyre"	OPC UA Pub/Sub over MQTT	https://github.com/open62541/open62541/issues/2865	kusumy	
+1574231533-320	https://github.com/open62541/open62541/issues?page=5&q=is%3Aissue+is%3Aopen	Problem when using multiple DataSetReader	"#2817
+            opened on 14 Jun by
+            Fischer-Thomas"	Problem when using multiple DataSetReader	https://github.com/open62541/open62541/issues/2817		
+1574231898-462	https://github.com/open62541/open62541/issues?page=4&q=is%3Aissue+is%3Aopen	Compile freeRTOS with open62541 errors	"#2893
+            opened on 18 Jul by
+            mrburen121"	Compile freeRTOS with open62541 errors	https://github.com/open62541/open62541/issues/2893	mrburen121	
+1574231460-264	https://github.com/open62541/open62541/issues?page=5&q=is%3Aissue+is%3Aopen	"PubSub Publisher example, not setting the DataSetMetaData"	"#2800
+            opened on 8 Jun by
+            cpipero"	"PubSub Publisher example, not setting the DataSetMetaData"	https://github.com/open62541/open62541/issues/2800		"@cpipero said:
+`But in truth, a true PubSub publisher should also inform potential susbcribers/clients/configurators of its configuration. That's why we have the PubSub information model and methods.'
+Let me recall a well-known definition:
+Publisher-subsc"
+1574231919-510	https://github.com/open62541/open62541/issues?page=4&q=is%3Aissue+is%3Aopen	Semantic release numbers	"#2923
+            opened on 25 Jul by
+            jrcoding"	Semantic release numbers	https://github.com/open62541/open62541/issues/2923	Pro	
+1574231880-449	https://github.com/open62541/open62541/issues?page=4&q=is%3Aissue+is%3Aopen	Event-based Subscriber OPCUA pubsub	"#2890
+            opened on 17 Jul by
+            canadyre"	Event-based Subscriber OPCUA pubsub	https://github.com/open62541/open62541/issues/2890	canadyre	
+1574231533-328	https://github.com/open62541/open62541/issues?page=5&q=is%3Aissue+is%3Aopen	Problem when using multiple DataSetReader	"#2817
+            opened on 14 Jun by
+            Fischer-Thomas"	Problem when using multiple DataSetReader	https://github.com/open62541/open62541/issues/2817		
+1574231693-391	https://github.com/open62541/open62541/issues?page=4&q=is%3Aissue+is%3Aopen	Remove multiple compiler flags for new architecture does not work	"#2850
+            opened on 28 Jun by
+            gbeuning"	Remove multiple compiler flags for new architecture does not work	https://github.com/open62541/open62541/issues/2850	gbeuning	
+1574231494-298	https://github.com/open62541/open62541/issues?page=5&q=is%3Aissue+is%3Aopen	NamespaceArray looks good but Namespaces object doesn't match it	"#2810
+            opened on 12 Jun by
+            cpipero"	NamespaceArray looks good but Namespaces object doesn't match it	https://github.com/open62541/open62541/issues/2810		"I tried the server_ctt example (and the server_nodeset and some of the tutorials too for good measure) and things are even worse: the 1 Namespaces ` object is actually missing .
+
+In the application we wrote, the Namespaces object does appears -- albeit missing the correct content. That's probably because we used the nodeset geenration python scripts that make explict calls to UA_Server_addNamespace() in the ua_server.c file.
+For some reason, I can't replicate the same behavio using the tutorial_server_datasource.c example which makes the came calls.
+Note on Compliance
+As far as the specification goes (Part 5, Section 6.3.1, Table 9),  the Server object lists the Namespaces component as optional .
+
+However, this component is much needed by the so called aggregating servers which are getting some traction these days (the one I can think of is the one that Microsoft uses for their AzureIoT stuff, and of course, we wrote our own as well)."
+1574231880-453	https://github.com/open62541/open62541/issues?page=4&q=is%3Aissue+is%3Aopen	Event-based Subscriber OPCUA pubsub	"#2890
+            opened on 17 Jul by
+            canadyre"	Event-based Subscriber OPCUA pubsub	https://github.com/open62541/open62541/issues/2890	sohailmushtaq	
+1574231898-470	https://github.com/open62541/open62541/issues?page=4&q=is%3Aissue+is%3Aopen	Compile freeRTOS with open62541 errors	"#2893
+            opened on 18 Jul by
+            mrburen121"	Compile freeRTOS with open62541 errors	https://github.com/open62541/open62541/issues/2893	svro86	
+1574231618-372	https://github.com/open62541/open62541/issues?page=5&q=is%3Aissue+is%3Aopen	"[OPCUA CLIENT]: ""UA_Client_getEndpoints""  return ""BadSecureChannelIdInvalid"""	"#2844
+            opened on 26 Jun by
+            elitezhu"	"[OPCUA CLIENT]: ""UA_Client_getEndpoints""  return ""BadSecureChannelIdInvalid"""	https://github.com/open62541/open62541/issues/2844	mlgiraud	
+1574231851-447	https://github.com/open62541/open62541/issues?page=4&q=is%3Aissue+is%3Aopen	Browsing published nodes for node-id	"#2875
+            opened on 9 Jul by
+            dferrel71"	Browsing published nodes for node-id	https://github.com/open62541/open62541/issues/2875		"#2818
+
+Have a look at this one"
+1574231898-468	https://github.com/open62541/open62541/issues?page=4&q=is%3Aissue+is%3Aopen	Compile freeRTOS with open62541 errors	"#2893
+            opened on 18 Jul by
+            mrburen121"	Compile freeRTOS with open62541 errors	https://github.com/open62541/open62541/issues/2893	cabralfortiss	
+1574231910-495	https://github.com/open62541/open62541/issues?page=4&q=is%3Aissue+is%3Aopen	Get all changed monitored items of subscription at the same time	"#2913
+            opened on 23 Jul by
+            je1h"	Get all changed monitored items of subscription at the same time	https://github.com/open62541/open62541/issues/2913		"Thanks for your answer!
+
+I do UA_Client_run_iterate(client, 0); after subscriptions have been set up.
+
+But the UA_Client_addTimedCallback timer I set up in callback never fires."
+1574231800-436	https://github.com/open62541/open62541/issues?page=4&q=is%3Aissue+is%3Aopen	OPC UA Pub/Sub over MQTT	"#2865
+            opened on 3 Jul by
+            canadyre"	OPC UA Pub/Sub over MQTT	https://github.com/open62541/open62541/issues/2865		"Hi,
+
+there is a branch which contains OPC UA PubSub MQTT with examples also. Check the branch pubsub_mqtt_clean. My master thesis is about OPC UA PubSub, so I've worked on PubSub with MQTT, in case you have questions just let me know.
+Regards
+Sohail
+
+Hi @sohailmushtaq  can you show me where this branch is ?
+Regards"
+1574231460-253	https://github.com/open62541/open62541/issues?page=5&q=is%3Aissue+is%3Aopen	"PubSub Publisher example, not setting the DataSetMetaData"	"#2800
+            opened on 8 Jun by
+            cpipero"	"PubSub Publisher example, not setting the DataSetMetaData"	https://github.com/open62541/open62541/issues/2800	cpipero	
+1574231910-494	https://github.com/open62541/open62541/issues?page=4&q=is%3Aissue+is%3Aopen	Get all changed monitored items of subscription at the same time	"#2913
+            opened on 23 Jul by
+            je1h"	Get all changed monitored items of subscription at the same time	https://github.com/open62541/open62541/issues/2913		"I think it is not possible. But you can use the same callback for all MonitoredItems. There you safe the value in a list and add a callback via UA_Client_addTimedCallback, with UA_DateTime_nowMonotonic as time Parameter. So you will get the Callback after the current NotficationMessage. This only works if you use UA_Client_run_iterate with timeout 0."
+1574231898-488	https://github.com/open62541/open62541/issues?page=4&q=is%3Aissue+is%3Aopen	Compile freeRTOS with open62541 errors	"#2893
+            opened on 18 Jul by
+            mrburen121"	Compile freeRTOS with open62541 errors	https://github.com/open62541/open62541/issues/2893		"mmm that's strange, all the errors are related to the lwip, and those flags should take care of it. Maybe check that these values are actually there when used in open62541.
+In you open62541.h after the includes like #include <lwip/sockets.h> put some #if to check that for example LWIP_COMPAT_SOCKETS  is actually 0"
+1574231460-271	https://github.com/open62541/open62541/issues?page=5&q=is%3Aissue+is%3Aopen	"PubSub Publisher example, not setting the DataSetMetaData"	"#2800
+            opened on 8 Jun by
+            cpipero"	"PubSub Publisher example, not setting the DataSetMetaData"	https://github.com/open62541/open62541/issues/2800		"Thank you guys,
+
+I have been looking at a way to ""cheat"" just to do some final testing at the interop this week.
+In reality, as you are probably saying, things should start happening when the server adds datafields.
+But in the meanwhile, I tried to modify the OnRead call in the ua_pubsub_ns0.c.
+I'm not successful yet, because I don't have much time left and I'm just shooting in the dark.
+The following code (very ugly and should NEVER be user) does succeed on the server side, but the client doesn't like it and eventually leads to bad outcomes.
+But I put it here for you to look at and see if it can be easily ""steered"" in the right direction.
+I'm making up the field name (using the tutorial sample I will only have one field all the times).
+Aagin, this is just for you to see if modifying the OnRead this way makes sense. Clearly it needs to be improved.
+static void
+onRead(UA_Server *server, const UA_NodeId *sessionId, void *sessionContext,
+       const UA_NodeId *nodeid, void *context,
+       const UA_NumericRange *range, const UA_DataValue *data) {
+    UA_Variant value;
+    UA_Variant_init(&value);
+    const UA_NodePropertyContext *nodeContext = (const UA_NodePropertyContext*)context;
+    const UA_NodeId *myNodeId = &nodeContext->parentNodeId;
+
+    switch(nodeContext->parentClassifier){
+    case UA_NS0ID_PUBSUBCONNECTIONTYPE: {
+        UA_PubSubConnection *pubSubConnection =
+            UA_PubSubConnection_findConnectionbyId(server, *myNodeId);
+        switch(nodeContext->elementClassiefier) {
+        case UA_NS0ID_PUBSUBCONNECTIONTYPE_PUBLISHERID:
+            if(pubSubConnection->config->publisherIdType == UA_PUBSUB_PUBLISHERID_STRING) {
+                UA_Variant_setScalar(&value, &pubSubConnection->config->publisherId.numeric,
+                                     &UA_TYPES[UA_TYPES_STRING]);
+            } else {
+                UA_Variant_setScalar(&value, &pubSubConnection->config->publisherId.numeric,
+                                     &UA_TYPES[UA_TYPES_UINT32]);
+            }
+            break;
+        default:
+            UA_LOG_WARNING(&server->config.logger, UA_LOGCATEGORY_SERVER,
+                           ""Read error! Unknown property."");
+        }
+        break;
+    }
+    case UA_NS0ID_WRITERGROUPTYPE: {
+        UA_WriterGroup *writerGroup = UA_WriterGroup_findWGbyId(server, *myNodeId);
+        if(!writerGroup)
+            return;
+        switch(nodeContext->elementClassiefier){
+        case UA_NS0ID_WRITERGROUPTYPE_PUBLISHINGINTERVAL:
+            UA_Variant_setScalar(&value, &writerGroup->config.publishingInterval,
+                                 &UA_TYPES[UA_TYPES_DURATION]);
+            break;
+        default:
+            UA_LOG_WARNING(&server->config.logger, UA_LOGCATEGORY_SERVER,
+                           ""Read error! Unknown property."");
+        }
+        break;
+    }
+    case UA_NS0ID_PUBLISHEDDATAITEMSTYPE: {
+        UA_PublishedDataSet *publishedDataSet = UA_PublishedDataSet_findPDSbyId(server, *myNodeId);
+        if(!publishedDataSet)
+            return;
+        switch(nodeContext->elementClassiefier) {
+        case UA_NS0ID_PUBLISHEDDATAITEMSTYPE_PUBLISHEDDATA: {
+            UA_PublishedVariableDataType *pvd = (UA_PublishedVariableDataType *)
+                UA_calloc(publishedDataSet->fieldSize, sizeof(UA_PublishedVariableDataType));
+            size_t counter = 0;
+            UA_DataSetField *field;
+            LIST_FOREACH(field, &publishedDataSet->fields, listEntry) {
+                pvd[counter].attributeId = UA_ATTRIBUTEID_VALUE;
+                pvd[counter].publishedVariable = field->config.field.variable.publishParameters.publishedVariable;
+                //UA_NodeId_copy(&field->config.field.variable.publishParameters.publishedVariable, &pvd[counter].publishedVariable);
+                counter++;
+            }
+            UA_Variant_setArray(&value, pvd, publishedDataSet->fieldSize,
+                                &UA_TYPES[UA_TYPES_PUBLISHEDVARIABLEDATATYPE]);
+            break;
+        }
+        //HERE's WHAT I ADDED
+        case UA_NS0ID_PUBLISHEDDATAITEMSTYPE_DATASETMETADATA: {
+
+            UA_DataSetMetaDataType *dsmd = UA_DataSetMetaDataType_new();
+            UA_DataSetMetaDataType_init(dsmd);
+
+            dsmd->configurationVersion = publishedDataSet->dataSetMetaData.configurationVersion;
+            dsmd->dataSetClassId = publishedDataSet->dataSetMetaData.dataSetClassId;
+            dsmd->name = publishedDataSet->config.name;
+
+
+            dsmd->fieldsSize++;
+            dsmd->fields =
+                    (UA_FieldMetaData *) UA_realloc(dsmd->fields, dsmd->fieldsSize * sizeof(UA_FieldMetaData));
+            for (size_t i = 0; i < dsmd->fieldsSize; ++i) { //TODO:of course, here I should use the List access methods
+                                                            //against the publishedDataSet.fields LIST
+                                                            // so I can get all the attributes from those
+                                                            //but for now I'm just testing something
+                UA_FieldMetaData_init(&dsmd->fields[i]);
+
+                UA_NodeId_copy (&UA_TYPES[UA_TYPES_DATETIME].typeId,
+                                &dsmd->fields[i].dataType);
+                dsmd->fields[i].builtInType = UA_NS0ID_DATETIME;
+                dsmd->fields[i].dataSetFieldId = UA_Guid_random(); //TODO: gotta figure this one out
+                UA_String strTmp = UA_STRING (""DateTime"");
+                UA_String_copy (&strTmp, &dsmd->fields[0].name);
+                dsmd->fields[i].valueRank = -1; /* scalar */
+
+            }
+
+            UA_Variant_setScalarCopy(&value, dsmd, &UA_TYPES[UA_TYPES_DATASETMETADATATYPE]);
+
+            break;
+        }
+        case UA_NS0ID_PUBLISHEDDATAITEMSTYPE_CONFIGURATIONVERSION: {
+            UA_Variant_setScalarCopy(&value, &publishedDataSet->dataSetMetaData.configurationVersion,
+                                     &UA_TYPES[UA_TYPES_CONFIGURATIONVERSIONDATATYPE]);
+            break;
+        }
+        default:
+            UA_LOG_WARNING(&server->config.logger, UA_LOGCATEGORY_SERVER,
+                           ""Read error! Unknown property."");
+        }
+        break;
+    }
+    default:
+        UA_LOG_WARNING(&server->config.logger, UA_LOGCATEGORY_SERVER,
+                       ""Read error! Unknown parent element."");
+    }
+    UA_StatusCode retval = UA_Server_writeValue(server, *nodeid, value);
+    if (retval != UA_STATUSCODE_GOOD) UA_LOG_ERROR(&server->config.logger, UA_LOGCATEGORY_SERVER, ""Read error! %s"", UA_StatusCode_name(retval));
+}
+Sorry I am doing this in a rush. I will look at it more this weekend with more time.
+EDITED: improved version after @jpfr hints (still not decoding correctly)."
+1574231834-438	https://github.com/open62541/open62541/issues?page=4&q=is%3Aissue+is%3Aopen	Server does not persist the NodeId of a Node	"#2873
+            opened on 9 Jul by
+            GeorgeSellner"	Server does not persist the NodeId of a Node	https://github.com/open62541/open62541/issues/2873	GeorgeSellner	
+1574231800-421	https://github.com/open62541/open62541/issues?page=4&q=is%3Aissue+is%3Aopen	OPC UA Pub/Sub over MQTT	"#2865
+            opened on 3 Jul by
+            canadyre"	OPC UA Pub/Sub over MQTT	https://github.com/open62541/open62541/issues/2865	kusumy	
+1574231903-491	https://github.com/open62541/open62541/issues?page=4&q=is%3Aissue+is%3Aopen	Integrate CTT into CI	"#2894
+            opened on 18 Jul by
+            Pro"	Integrate CTT into CI	https://github.com/open62541/open62541/issues/2894		"Even better, use the Probot tool:
+https://github.com/probot/probot"
+1574231516-305	https://github.com/open62541/open62541/issues?page=5&q=is%3Aissue+is%3Aopen	How to create a certification and send this to server	"#2816
+            opened on 14 Jun by
+            AndyarcherReset"	How to create a certification and send this to server	https://github.com/open62541/open62541/issues/2816	jpfr	
+1574231533-334	https://github.com/open62541/open62541/issues?page=5&q=is%3Aissue+is%3Aopen	Problem when using multiple DataSetReader	"#2817
+            opened on 14 Jun by
+            Fischer-Thomas"	Problem when using multiple DataSetReader	https://github.com/open62541/open62541/issues/2817		if(LIST_FIRST(&pConnection->readerGroups)->readersCount == 1) {
+1574231533-321	https://github.com/open62541/open62541/issues?page=5&q=is%3Aissue+is%3Aopen	Problem when using multiple DataSetReader	"#2817
+            opened on 14 Jun by
+            Fischer-Thomas"	Problem when using multiple DataSetReader	https://github.com/open62541/open62541/issues/2817		"UA_LOG_INFO(&server->config.logger, UA_LOGCATEGORY_SERVER, ""only 1 DataSetReader available. This one will be used."");"
+1574231391-230	https://github.com/open62541/open62541/issues?page=5&q=is%3Aissue+is%3Aopen	UA_server_browse maxrefs	"#2791
+            opened on 5 Jun by
+            etm"	UA_server_browse maxrefs	https://github.com/open62541/open62541/issues/2791	jpfr	
+1574231601-362	https://github.com/open62541/open62541/issues?page=5&q=is%3Aissue+is%3Aopen	Subscriber: Using multiple ReaderGroups causes PubSubChannel->regist to fail	"#2839
+            opened on 24 Jun by
+            Fischer-Thomas"	Subscriber: Using multiple ReaderGroups causes PubSubChannel->regist to fail	https://github.com/open62541/open62541/issues/2839	jpfr	
+1574231477-284	https://github.com/open62541/open62541/issues?page=5&q=is%3Aissue+is%3Aopen	Dependencies between CustomDataTypes in different UA_DataTypeArray not supported	"#2808
+            opened on 12 Jun by
+            TorbenD"	Dependencies between CustomDataTypes in different UA_DataTypeArray not supported	https://github.com/open62541/open62541/issues/2808	TorbenD	
+1574231374-223	https://github.com/open62541/open62541/issues?page=5&q=is%3Aissue+is%3Aopen	BadSessionIdInvalid from Client	"#2790
+            opened on 5 Jun by
+            MarkusWeinand"	BadSessionIdInvalid from Client	https://github.com/open62541/open62541/issues/2790		"I added a wiresharkdump. It looks like the server is not responding to anything. The first response from the server comes after my writerequest and he immediately sends ServiceFault.
+
+But I can connect with UA_Expert just fine."
+1574231533-314	https://github.com/open62541/open62541/issues?page=5&q=is%3Aissue+is%3Aopen	Problem when using multiple DataSetReader	"#2817
+            opened on 14 Jun by
+            Fischer-Thomas"	Problem when using multiple DataSetReader	https://github.com/open62541/open62541/issues/2817	opcua-tsn-team-kalycito	
+1574231567-358	https://github.com/open62541/open62541/issues?page=5&q=is%3Aissue+is%3Aopen	Access control over endpoints	"#2829
+            opened on 18 Jun by
+            SebsSa"	Access control over endpoints	https://github.com/open62541/open62541/issues/2829		"@jpfr hello,
+
+is it possible to know which user is connected, so i give for each on of them different permissions?
+
+for example in the example above .. can i know if peter is connected so i give him just the permissions to just read the Vairables but not "
+1574231494-300	https://github.com/open62541/open62541/issues?page=5&q=is%3Aissue+is%3Aopen	NamespaceArray looks good but Namespaces object doesn't match it	"#2810
+            opened on 12 Jun by
+            cpipero"	NamespaceArray looks good but Namespaces object doesn't match it	https://github.com/open62541/open62541/issues/2810		"Thank you @jpfr  .   I can look at this if you need (I don't know what means to be a ""contributor"" but I will be messing with this code for  a while).
+I would prefer that Namespaces get added to/removed from together with the NamespaceArray updates (granted the condition that NS_0 -- maybe ""FULL"" -- is enabled).
+I'll take a crack at it and let you know.
+
+Thanks again."
+1574231409-241	https://github.com/open62541/open62541/issues?page=5&q=is%3Aissue+is%3Aopen	Processing the message failed with error BadOutOfMemory	"#2792
+            opened on 5 Jun by
+            MarineKing5248"	Processing the message failed with error BadOutOfMemory	https://github.com/open62541/open62541/issues/2792		"CRITICAL:opcua.client.ua_client.Socket:Received an error: MessageAbort(error:StatusCode(Good), reason:None
+
+That sounds like the problem is with python opcua.
+
+Wrong forum. Please post at FreePython's github."
+1574231760-402	https://github.com/open62541/open62541/issues?page=4&q=is%3Aissue+is%3Aopen	Historical data example code	"#2863
+            opened on 2 Jul by
+            GLmontanari"	Historical data example code	https://github.com/open62541/open62541/issues/2863	juangburgos	
+1574231880-448	https://github.com/open62541/open62541/issues?page=4&q=is%3Aissue+is%3Aopen	Event-based Subscriber OPCUA pubsub	"#2890
+            opened on 17 Jul by
+            canadyre"	Event-based Subscriber OPCUA pubsub	https://github.com/open62541/open62541/issues/2890	sohailmushtaq	
+1574231391-227	https://github.com/open62541/open62541/issues?page=5&q=is%3Aissue+is%3Aopen	UA_server_browse maxrefs	"#2791
+            opened on 5 Jun by
+            etm"	UA_server_browse maxrefs	https://github.com/open62541/open62541/issues/2791	jpfr	
+1574231800-434	https://github.com/open62541/open62541/issues?page=4&q=is%3Aissue+is%3Aopen	OPC UA Pub/Sub over MQTT	"#2865
+            opened on 3 Jul by
+            canadyre"	OPC UA Pub/Sub over MQTT	https://github.com/open62541/open62541/issues/2865		"Hi @kusumy , you can contact me at the following email address sohail95@live.it
+
+Regards
+
+Sohail"
+1574231460-275	https://github.com/open62541/open62541/issues?page=5&q=is%3Aissue+is%3Aopen	"PubSub Publisher example, not setting the DataSetMetaData"	"#2800
+            opened on 8 Jun by
+            cpipero"	"PubSub Publisher example, not setting the DataSetMetaData"	https://github.com/open62541/open62541/issues/2800		Just capturing a note from our release meeting. Cross reference Pull Request #3052 that starts fixing this.
+1574231283-193	https://github.com/open62541/open62541/issues?page=5&q=is%3Aissue+is%3Aopen	Subscriber implementation not subscribing to timestamp?	"#2771
+            opened on 29 May by
+            theresa95"	Subscriber implementation not subscribing to timestamp?	https://github.com/open62541/open62541/issues/2771	johndzilva	
+1574231533-322	https://github.com/open62541/open62541/issues?page=5&q=is%3Aissue+is%3Aopen	Problem when using multiple DataSetReader	"#2817
+            opened on 14 Jun by
+            Fischer-Thomas"	Problem when using multiple DataSetReader	https://github.com/open62541/open62541/issues/2817		
+1574231516-310	https://github.com/open62541/open62541/issues?page=5&q=is%3Aissue+is%3Aopen	How to create a certification and send this to server	"#2816
+            opened on 14 Jun by
+            AndyarcherReset"	How to create a certification and send this to server	https://github.com/open62541/open62541/issues/2816		"This is definitely supported.
+See here the example:
+
+https://github.com/open62541/open62541/blob/master/examples/encryption/client_encryption.c
+You can define which SecurityPolicy to use in the client config:
+
+https://open62541.org/doc/current/client.html#client-configuration
+
+Hi,
+
+From the example client_encryption.c, I just see that can load the certificate.
+
+But how can I create a certificate within the code? Or should I use another way to do this by myself?"
+1574231567-357	https://github.com/open62541/open62541/issues?page=5&q=is%3Aissue+is%3Aopen	Access control over endpoints	"#2829
+            opened on 18 Jun by
+            SebsSa"	Access control over endpoints	https://github.com/open62541/open62541/issues/2829		"Here is an example where the standard AccessControl policy (allow all) is overriden.
+https://github.com/open62541/open62541/blob/master/examples/access_control/server_access_control.c
+When the session is created, the AccessControl plugin inspects the login information and can attach custom data to the session.
+This data is then evaluated at runtime.
+
+When a service (like Read) is called on a node in the information model, the AccessControl plugin is queried if the user has sufficient rights."
+1574231496-303	https://github.com/open62541/open62541/issues?page=5&q=is%3Aissue+is%3Aopen	Monitored Item - exception-based model [Question]	"#2814
+            opened on 13 Jun by
+            rudoq32"	Monitored Item - exception-based model [Question]	https://github.com/open62541/open62541/issues/2814		"That's a good point. So userland should be able to trigger variablechange notifications.
+We then need to decide how and with which context the trigger is done.
+
+Either
+
+Trigger the MonitoredItem
+
+We need a way to register MonitoredItems (created by a client) in userland
+E.g. with a callback where new MonitoredItems are announced
+
+
+Trigger the VariableNode
+
+The Variable needs a linked list of the interested MonitoredItems (which it does not have at the moment)
+A new public API method is created to manually trigger notifications to be created for a variable"
+1574231800-426	https://github.com/open62541/open62541/issues?page=4&q=is%3Aissue+is%3Aopen	OPC UA Pub/Sub over MQTT	"#2865
+            opened on 3 Jul by
+            canadyre"	OPC UA Pub/Sub over MQTT	https://github.com/open62541/open62541/issues/2865		"Hi,
+
+No, use only tutorial_pubsub_mqtt. First of all install a MQTT broker, such as Mosquitto (it's easy to install and use, I reccomend that). After you the Broker is running, just execute pubsub_mqtt you should see packets sent from Publisher to Broker on Wireshark. If you want to receive as well you have to configure also the Subscriber. Once both configured and connected to Broker, Publisher will send information through Broker to Subscriber."
+1574231800-419	https://github.com/open62541/open62541/issues?page=4&q=is%3Aissue+is%3Aopen	OPC UA Pub/Sub over MQTT	"#2865
+            opened on 3 Jul by
+            canadyre"	OPC UA Pub/Sub over MQTT	https://github.com/open62541/open62541/issues/2865	sohailmushtaq	
+1574231391-232	https://github.com/open62541/open62541/issues?page=5&q=is%3Aissue+is%3Aopen	UA_server_browse maxrefs	"#2791
+            opened on 5 Jun by
+            etm"	UA_server_browse maxrefs	https://github.com/open62541/open62541/issues/2791		"#2732 will land soon.
+
+Let's see if the issue remains."
+1574231533-317	https://github.com/open62541/open62541/issues?page=5&q=is%3Aissue+is%3Aopen	Problem when using multiple DataSetReader	"#2817
+            opened on 14 Jun by
+            Fischer-Thomas"	Problem when using multiple DataSetReader	https://github.com/open62541/open62541/issues/2817		if(pConnection->readerGroupsSize == 1) {
+1574231567-351	https://github.com/open62541/open62541/issues?page=5&q=is%3Aissue+is%3Aopen	Access control over endpoints	"#2829
+            opened on 18 Jun by
+            SebsSa"	Access control over endpoints	https://github.com/open62541/open62541/issues/2829	jpfr	
+1574231800-412	https://github.com/open62541/open62541/issues?page=4&q=is%3Aissue+is%3Aopen	OPC UA Pub/Sub over MQTT	"#2865
+            opened on 3 Jul by
+            canadyre"	OPC UA Pub/Sub over MQTT	https://github.com/open62541/open62541/issues/2865	jpfr	
+1574231914-496	https://github.com/open62541/open62541/issues?page=4&q=is%3Aissue+is%3Aopen	Generated custom data-types inside a method call	"#2920
+            opened on 24 Jul by
+            starki93"	Generated custom data-types inside a method call	https://github.com/open62541/open62541/issues/2920	Pro	
+1574231477-278	https://github.com/open62541/open62541/issues?page=5&q=is%3Aissue+is%3Aopen	Dependencies between CustomDataTypes in different UA_DataTypeArray not supported	"#2808
+            opened on 12 Jun by
+            TorbenD"	Dependencies between CustomDataTypes in different UA_DataTypeArray not supported	https://github.com/open62541/open62541/issues/2808	jpfr	
+1574231898-461	https://github.com/open62541/open62541/issues?page=4&q=is%3Aissue+is%3Aopen	Compile freeRTOS with open62541 errors	"#2893
+            opened on 18 Jul by
+            mrburen121"	Compile freeRTOS with open62541 errors	https://github.com/open62541/open62541/issues/2893	cabralfortiss	
+1574231584-361	https://github.com/open62541/open62541/issues?page=5&q=is%3Aissue+is%3Aopen	Historize data in a circular buffer	"#2835
+            opened on 20 Jun by
+            luibass92"	Historize data in a circular buffer	https://github.com/open62541/open62541/issues/2835		"@peter-rustler-basyskom
+
+@basyskom-meerkoetter
+Can you have a look at this?"
+1574231919-513	https://github.com/open62541/open62541/issues?page=4&q=is%3Aissue+is%3Aopen	Semantic release numbers	"#2923
+            opened on 25 Jul by
+            jrcoding"	Semantic release numbers	https://github.com/open62541/open62541/issues/2923		"Does it make sense and is it reasonable to ensure being compatible with Semantic Versioning (beginning with version 1.0.0) ?
+
+Short answer: Yes
+Long answer: I'm definitely in favour of semantic versioning. We need to find a good way to keep the Changelog updated and document all the major and minor changes.
+It would be best if there are some automatic tools/bots which help us with that and check pull requests correspondingly.
+I don't mind if we reach version 10.0 in a year, honestly do not care that much about version numbers, as long as they make sense = stick to semver.
+@jpfr maybe the 1.0 release is a good starting point to enforce semver?"
+1574231283-196	https://github.com/open62541/open62541/issues?page=5&q=is%3Aissue+is%3Aopen	Subscriber implementation not subscribing to timestamp?	"#2771
+            opened on 29 May by
+            theresa95"	Subscriber implementation not subscribing to timestamp?	https://github.com/open62541/open62541/issues/2771	theresa95	
+1574231743-397	https://github.com/open62541/open62541/issues?page=4&q=is%3Aissue+is%3Aopen	PubSub packet latency	"#2860
+            opened on 2 Jul by
+            canadyre"	PubSub packet latency	https://github.com/open62541/open62541/issues/2860	Pro	
+1574231357-219	https://github.com/open62541/open62541/issues?page=5&q=is%3Aissue+is%3Aopen	Support for handling subscriptions & monitored items externally	"#2788
+            opened on 5 Jun by
+            lkaino"	Support for handling subscriptions & monitored items externally	https://github.com/open62541/open62541/issues/2788		"Variables have a MinimumSamplingInterval attribute.
+
+So for the values that are created at 1000ms, you can limit to exactly that.
+See also the questions raised in #2814 on Exception-based DataChange MonitoredItems.
+Feel free to make a design proposal for an additional API.
+
+We need a proposal to see how much effort it is."
+1574231880-456	https://github.com/open62541/open62541/issues?page=4&q=is%3Aissue+is%3Aopen	Event-based Subscriber OPCUA pubsub	"#2890
+            opened on 17 Jul by
+            canadyre"	Event-based Subscriber OPCUA pubsub	https://github.com/open62541/open62541/issues/2890		"Ok, @canadyre.
+
+If you used MQTT you saw that they use a callback for receiving messages and with UDP there is no such callback mechanism in the code. I think for now the polling remains because they need to do polling on the channel where they receive. Now I don't remember the details of the code but inside I saw that you have to do this polling to receive information at Subscriber side. I hope I'm understandable :)"
+1574231533-340	https://github.com/open62541/open62541/issues?page=5&q=is%3Aissue+is%3Aopen	Problem when using multiple DataSetReader	"#2817
+            opened on 14 Jun by
+            Fischer-Thomas"	Problem when using multiple DataSetReader	https://github.com/open62541/open62541/issues/2817		}
+1574231391-234	https://github.com/open62541/open62541/issues?page=5&q=is%3Aissue+is%3Aopen	UA_server_browse maxrefs	"#2791
+            opened on 5 Jun by
+            etm"	UA_server_browse maxrefs	https://github.com/open62541/open62541/issues/2791		"Valgrind looks fine.
+==5802== HEAP SUMMARY:
+
+==5802==     in use at exit: 87,795 bytes in 2,428 blocks
+
+==5802==   total heap usage: 8,898 allocs, 6,470 frees, 353,031 bytes allocated
+
+==5802==
+
+==5802== LEAK SUMMARY:
+
+==5802==    definitely lost: 0 bytes in 0 blocks
+
+==5802==    indirectly lost: 0 bytes in 0 blocks
+
+==5802==      possibly lost: 0 bytes in 0 blocks
+
+==5802==    still reachable: 87,795 bytes in 2,428 blocks
+
+==5802==         suppressed: 0 bytes in 0 blocks
+
+==5802== Rerun with --leak-check=full to see details of leaked memory
+
+==5802==
+
+==5802== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)"
+1574231460-261	https://github.com/open62541/open62541/issues?page=5&q=is%3Aissue+is%3Aopen	"PubSub Publisher example, not setting the DataSetMetaData"	"#2800
+            opened on 8 Jun by
+            cpipero"	"PubSub Publisher example, not setting the DataSetMetaData"	https://github.com/open62541/open62541/issues/2800	cpipero	
+1574231898-482	https://github.com/open62541/open62541/issues?page=4&q=is%3Aissue+is%3Aopen	Compile freeRTOS with open62541 errors	"#2893
+            opened on 18 Jul by
+            mrburen121"	Compile freeRTOS with open62541 errors	https://github.com/open62541/open62541/issues/2893		"Thank you. I updated my FreeRTOS files to V10.2.0 and this solved the missing pdMS_TO_TICKS problem.
+For now I have two questions left:
+
+What heap file are you using? Heap 1,2,3,4 or 5?
+Below my server code. Is this correct? If yes then I'm going to find the problem in my micro controller (driver) files.
+
+/* Sets up system hardware */
+void prvSetupHardware(void)
+{
+	/* LED0 is used for the link status, on = PHY cable detected */
+	SystemCoreClockUpdate();
+	Board_Init();
+
+	/* Initial LED state is off to show an unconnected cable state */
+	for (int i = 0; i < 8 ; i++) {
+		Board_LED_Set(i, false);
+	}
+}
+
+
+void vApplicationMallocFailedHook(){
+	for(;;){
+		vTaskDelay(pdMS_TO_TICKS(1000));
+		DEBUGOUT(""vApplicationMallocFailedHook"");
+	}
+}
+
+void vApplicationStackOverflowHook( TaskHandle_t xTask, char *pcTaskName ){
+	for(;;){
+		vTaskDelay(pdMS_TO_TICKS(1000));
+		DEBUGOUT(""vApplicationStackOverflowHook"");
+	}
+}
+
+static void opcua_thread(void *arg)
+{
+   //Allows to set smaller buffer for the connections, which can cause problems
+	UA_UInt32 sendBufferSize = 8000; //64 KB was too much for my platform
+	UA_UInt32 recvBufferSize = 8000;  //64 KB was too much for my platform
+
+	UA_Server *server = UA_Server_new();
+	UA_ServerConfig *config = UA_Server_getConfig(server);
+
+	UA_ServerConfig_setMinimalCustomBuffer(config, 4840, 0, sendBufferSize, recvBufferSize);
+
+	//VERY IMPORTANT: Set the hostname with your IP before allocating the server
+	UA_ServerConfig_setCustomHostname(config, UA_STRING(""192.168.1.10""));
+	UA_ServerConfig_setDefault(UA_Server_getConfig(server));
+
+	//example
+	// https://open62541.org/doc/current/tutorial_server_variable.html
+
+	UA_NodeId myIntegerNodeId = UA_NODEID_STRING(1, ""the.answer"");
+
+	/* Write a different integer value */
+	UA_Int32 myInteger = 43;
+	UA_Variant myVar;
+	UA_Variant_init(&myVar);
+	UA_Variant_setScalar(&myVar, &myInteger, &UA_TYPES[UA_TYPES_INT32]);
+	UA_Server_writeValue(server, myIntegerNodeId, myVar);
+
+	/* Set the status code of the value to an error code. The function
+	 * UA_Server_write provides access to the raw service. The above
+	 * UA_Server_writeValue is syntactic sugar for writing a specific node
+	 * attribute with the write service. */
+	UA_WriteValue wv;
+	UA_WriteValue_init(&wv);
+	wv.nodeId = myIntegerNodeId;
+	wv.attributeId = UA_ATTRIBUTEID_VALUE;
+	wv.value.status = UA_STATUSCODE_BADNOTCONNECTED;
+	wv.value.hasStatus = true;
+	UA_Server_write(server, &wv);
+
+	/* Reset the variable to a good statuscode with a value */
+	wv.value.hasStatus = false;
+	wv.value.value = myVar;
+	wv.value.hasValue = true;
+	UA_Server_write(server, &wv);
+}
+
+int main(void) {
+//	signal(SIGINT, stopHandler);
+//	signal(SIGTERM, stopHandler);
+
+	prvSetupHardware();
+
+	/* Add another thread for initializing physical interface. This
+	   is delayed from the main LWIP initialization. */
+	xTaskCreate(vSetupIFTask, ""SetupIFx"",
+				configMINIMAL_STACK_SIZE, NULL, (tskIDLE_PRIORITY + 1UL),
+				(xTaskHandle *) NULL);
+	/* LED1 toggle thread */
+	xTaskCreate(vLEDTask1, ""vTaskLed1"", configMINIMAL_STACK_SIZE,
+			NULL, (tskIDLE_PRIORITY + 1UL), (TaskHandle_t *) NULL);
+
+	/* LED2 toggle thread */
+	xTaskCreate(vLEDTask2, ""vTaskLed2"", configMINIMAL_STACK_SIZE,
+			NULL, (tskIDLE_PRIORITY + 1UL), (TaskHandle_t *) NULL);
+
+	/* UART output thread, simply counts seconds */
+	xTaskCreate(vUARTTask, ""vTaskUart"", configMINIMAL_STACK_SIZE,
+			NULL, (tskIDLE_PRIORITY + 1UL), (TaskHandle_t *) NULL);
+
+	// Start opcua server
+	printf(""Start opcua server"");
+	if(sys_thread_new(""opcua_thread"", opcua_thread, NULL, 8000, 3) == NULL)
+		 DEBUGOUT(""opcua(): Task creation failed."", 0);
+
+	/* Start the scheduler */
+	vTaskStartScheduler();
+
+	/* Should never arrive here */
+	return 1;
+}
+
+With the lines below commented so is it not a part of the program, the LED's are blinking and the internet connection is able to be established.
+if(sys_thread_new(""opcua_thread"", opcua_thread, NULL, 8000, 5) == NULL)
+	 DEBUGOUT(""opcua(): Task creation failed."", 0);
+
+It never come to the line with the debugout print."
+1574231533-341	https://github.com/open62541/open62541/issues?page=5&q=is%3Aissue+is%3Aopen	Problem when using multiple DataSetReader	"#2817
+            opened on 14 Jun by
+            Fischer-Thomas"	Problem when using multiple DataSetReader	https://github.com/open62541/open62541/issues/2817		
+1574231533-323	https://github.com/open62541/open62541/issues?page=5&q=is%3Aissue+is%3Aopen	Problem when using multiple DataSetReader	"#2817
+            opened on 14 Jun by
+            Fischer-Thomas"	Problem when using multiple DataSetReader	https://github.com/open62541/open62541/issues/2817		dataSetReaderErg = LIST_FIRST(&LIST_FIRST(&pConnection->readerGroups)->readers);
+1574231426-248	https://github.com/open62541/open62541/issues?page=5&q=is%3Aissue+is%3Aopen	Can report.ci be helpful?	"#2793
+            opened on 6 Jun by
+            escherstair"	Can report.ci be helpful?	https://github.com/open62541/open62541/issues/2793		I think you're right.
+1574231800-429	https://github.com/open62541/open62541/issues?page=4&q=is%3Aissue+is%3Aopen	OPC UA Pub/Sub over MQTT	"#2865
+            opened on 3 Jul by
+            canadyre"	OPC UA Pub/Sub over MQTT	https://github.com/open62541/open62541/issues/2865		"Hi @rudoq32,
+
+I'm not familiar with MS VC. I hope I'll be helpful even if I've worked on Ubuntu. When you compile the project you don't need only UA_BUILD_EXAMPLES but also the advanced options: UA_ENABLE_PUBSUB ON, UA_ENABLE_PUBSUB_ETH_UADP ON, etc. Including UA_ENABLE_PUBSUB_MQTT which enables the MQTT feature. Check if these options are all enabled and check that in the CmakeLists.txt in the folder examples contains this:
+
+if(UA_ENABLE_PUBSUB_MQTT)
+
+add_example(tutorial_pubsub_mqtt pubsub/tutorial_pubsub_mqtt.c)
+
+endif()
+
+Finally check also that UA_ENABLE_JSON_ENCODING is enabled for JSON encoding. After all these checks it should work. Let me know if you have any problems.
+Regards,
+Sohail"
+1574231567-350	https://github.com/open62541/open62541/issues?page=5&q=is%3Aissue+is%3Aopen	Access control over endpoints	"#2829
+            opened on 18 Jun by
+            SebsSa"	Access control over endpoints	https://github.com/open62541/open62541/issues/2829	SebsSa	
+1574231283-195	https://github.com/open62541/open62541/issues?page=5&q=is%3Aissue+is%3Aopen	Subscriber implementation not subscribing to timestamp?	"#2771
+            opened on 29 May by
+            theresa95"	Subscriber implementation not subscribing to timestamp?	https://github.com/open62541/open62541/issues/2771	johndzilva	
+1574231914-509	https://github.com/open62541/open62541/issues?page=4&q=is%3Aissue+is%3Aopen	Generated custom data-types inside a method call	"#2920
+            opened on 24 Jul by
+            starki93"	Generated custom data-types inside a method call	https://github.com/open62541/open62541/issues/2920		"Now i set value-rank to scalar and modified the callback to:
+    UA_ToolState *p = (UA_ToolState *)input[0].data;
+    printf(""din:%d dout:%d aout:%d\n"", p->din, p->dout, p->aout);
+The output i get is:
+din:0 dout:15027 aout:0
+
+But all inputs are set to ""1""."
+1574231880-450	https://github.com/open62541/open62541/issues?page=4&q=is%3Aissue+is%3Aopen	Event-based Subscriber OPCUA pubsub	"#2890
+            opened on 17 Jul by
+            canadyre"	Event-based Subscriber OPCUA pubsub	https://github.com/open62541/open62541/issues/2890	sohailmushtaq	
+1574231533-345	https://github.com/open62541/open62541/issues?page=5&q=is%3Aissue+is%3Aopen	Problem when using multiple DataSetReader	"#2817
+            opened on 14 Jun by
+            Fischer-Thomas"	Problem when using multiple DataSetReader	https://github.com/open62541/open62541/issues/2817		"Hi @Fischer-Thomas,
+
+We have addressed this issue in PR #2944.
+
+The same has been merged to the master.
+Regards
+
+opcua-tsn-team-kalycito"
+1574231800-415	https://github.com/open62541/open62541/issues?page=4&q=is%3Aissue+is%3Aopen	OPC UA Pub/Sub over MQTT	"#2865
+            opened on 3 Jul by
+            canadyre"	OPC UA Pub/Sub over MQTT	https://github.com/open62541/open62541/issues/2865	rudoq32	
+1574231880-457	https://github.com/open62541/open62541/issues?page=4&q=is%3Aissue+is%3Aopen	Event-based Subscriber OPCUA pubsub	"#2890
+            opened on 17 Jul by
+            canadyre"	Event-based Subscriber OPCUA pubsub	https://github.com/open62541/open62541/issues/2890		"Hi @canadyre,
+
+I have a question for pubsub over Rasberry Pi. Does the library work well? Do you try UDP and MQTT on Rasberry?
+
+Thanks!"
+1574231834-445	https://github.com/open62541/open62541/issues?page=4&q=is%3Aissue+is%3Aopen	Server does not persist the NodeId of a Node	"#2873
+            opened on 9 Jul by
+            GeorgeSellner"	Server does not persist the NodeId of a Node	https://github.com/open62541/open62541/issues/2873		"Any progress on this?
+
+Related questions:
+
+Can I change the nodeid of a node at runtime?
+Can I set the nodeid of an automatically instantiated child node? … (Obviously) only relevant for nodes created from objecttypes or variabletypes, e.g. refer to tutorial_server_object.c"
+1574231770-406	https://github.com/open62541/open62541/issues?page=4&q=is%3Aissue+is%3Aopen	Need for better TCP and mDNS interface selection	"#2864
+            opened on 2 Jul by
+            Pro"	Need for better TCP and mDNS interface selection	https://github.com/open62541/open62541/issues/2864		"I would like to get the PR merged before making further changes.
+
+I'm currently working on fixing some last issues on windows.
+Changing the code to make specifying an interface possible should be pretty straightforward, as we only need to change the function that creates the socket."
+1574231880-452	https://github.com/open62541/open62541/issues?page=4&q=is%3Aissue+is%3Aopen	Event-based Subscriber OPCUA pubsub	"#2890
+            opened on 17 Jul by
+            canadyre"	Event-based Subscriber OPCUA pubsub	https://github.com/open62541/open62541/issues/2890	canadyre	
+1574231409-239	https://github.com/open62541/open62541/issues?page=5&q=is%3Aissue+is%3Aopen	Processing the message failed with error BadOutOfMemory	"#2792
+            opened on 5 Jun by
+            MarineKing5248"	Processing the message failed with error BadOutOfMemory	https://github.com/open62541/open62541/issues/2792	MarineKing5248	
+1574231460-252	https://github.com/open62541/open62541/issues?page=5&q=is%3Aissue+is%3Aopen	"PubSub Publisher example, not setting the DataSetMetaData"	"#2800
+            opened on 8 Jun by
+            cpipero"	"PubSub Publisher example, not setting the DataSetMetaData"	https://github.com/open62541/open62541/issues/2800	jpfr	
+1574231477-279	https://github.com/open62541/open62541/issues?page=5&q=is%3Aissue+is%3Aopen	Dependencies between CustomDataTypes in different UA_DataTypeArray not supported	"#2808
+            opened on 12 Jun by
+            TorbenD"	Dependencies between CustomDataTypes in different UA_DataTypeArray not supported	https://github.com/open62541/open62541/issues/2808	TorbenD	
+1574231800-435	https://github.com/open62541/open62541/issues?page=4&q=is%3Aissue+is%3Aopen	OPC UA Pub/Sub over MQTT	"#2865
+            opened on 3 Jul by
+            canadyre"	OPC UA Pub/Sub over MQTT	https://github.com/open62541/open62541/issues/2865		"hi @sohailmushtaq ,
+
+Did you receive my email?
+Regards"
+1574231460-262	https://github.com/open62541/open62541/issues?page=5&q=is%3Aissue+is%3Aopen	"PubSub Publisher example, not setting the DataSetMetaData"	"#2800
+            opened on 8 Jun by
+            cpipero"	"PubSub Publisher example, not setting the DataSetMetaData"	https://github.com/open62541/open62541/issues/2800	cpipero	
+1574231919-514	https://github.com/open62541/open62541/issues?page=4&q=is%3Aissue+is%3Aopen	Semantic release numbers	"#2923
+            opened on 25 Jul by
+            jrcoding"	Semantic release numbers	https://github.com/open62541/open62541/issues/2923		"Maybe integrating https://github.com/semantic-release/semantic-release would be a good idea?
+
+That would also reduce the overall effort for a release and we can release new versions just by pushing to the release branch or so.
+Also nicely mentioned here:
+
+https://github.com/dbrock/semver-howto#first-official-release-100"
+1574231851-446	https://github.com/open62541/open62541/issues?page=4&q=is%3Aissue+is%3Aopen	Browsing published nodes for node-id	"#2875
+            opened on 9 Jul by
+            dferrel71"	Browsing published nodes for node-id	https://github.com/open62541/open62541/issues/2875	johndzilva	
+1574231533-333	https://github.com/open62541/open62541/issues?page=5&q=is%3Aissue+is%3Aopen	Problem when using multiple DataSetReader	"#2817
+            opened on 14 Jun by
+            Fischer-Thomas"	Problem when using multiple DataSetReader	https://github.com/open62541/open62541/issues/2817		
+1574231516-308	https://github.com/open62541/open62541/issues?page=5&q=is%3Aissue+is%3Aopen	How to create a certification and send this to server	"#2816
+            opened on 14 Jun by
+            AndyarcherReset"	How to create a certification and send this to server	https://github.com/open62541/open62541/issues/2816		"Right now, I'm working the other way around.
+
+I want to generate a server and run it with Basic128Rsa15 and only allow a specific third party to use it. (UAExpert in my case)
+That's why I'm not an expert, but maybe I can help you anyway.
+Read this through for yourself:
+
+#2637
+and maybe use :
+
+https://github.com/open62541/open62541/blob/master/tools/certs/create_self-signed.py  and
+
+https://github.com/open62541/open62541/blob/master/examples/encryption/client_encryption.c"
+1574231426-246	https://github.com/open62541/open62541/issues?page=5&q=is%3Aissue+is%3Aopen	Can report.ci be helpful?	"#2793
+            opened on 6 Jun by
+            escherstair"	Can report.ci be helpful?	https://github.com/open62541/open62541/issues/2793	escherstair	
+1574231426-247	https://github.com/open62541/open62541/issues?page=5&q=is%3Aissue+is%3Aopen	Can report.ci be helpful?	"#2793
+            opened on 6 Jun by
+            escherstair"	Can report.ci be helpful?	https://github.com/open62541/open62541/issues/2793		"I personally like gui reporting tools. These help to understand what is going on.
+Especially for out unit tests we would need some nicer output. Finding the error output in the currently over thousand lines is sometimes quite painful.
+So yes, we could benefit from such a tool.
+
+I looked through the supported unit test frameworks, but it seems that report.ci does not support the check framework (https://libcheck.github.io/check/) which we are using.
+Correct?"
+1574231800-409	https://github.com/open62541/open62541/issues?page=4&q=is%3Aissue+is%3Aopen	OPC UA Pub/Sub over MQTT	"#2865
+            opened on 3 Jul by
+            canadyre"	OPC UA Pub/Sub over MQTT	https://github.com/open62541/open62541/issues/2865	sohailmushtaq	
+1574231290-202	https://github.com/open62541/open62541/issues?page=5&q=is%3Aissue+is%3Aopen	Trying to read variable value periodically and asynchronously	"#2773
+            opened on 29 May by
+            tuxroger"	Trying to read variable value periodically and asynchronously	https://github.com/open62541/open62541/issues/2773	RavilN	
+1574231494-297	https://github.com/open62541/open62541/issues?page=5&q=is%3Aissue+is%3Aopen	NamespaceArray looks good but Namespaces object doesn't match it	"#2810
+            opened on 12 Jun by
+            cpipero"	NamespaceArray looks good but Namespaces object doesn't match it	https://github.com/open62541/open62541/issues/2810	jpfr	
+1574231460-266	https://github.com/open62541/open62541/issues?page=5&q=is%3Aissue+is%3Aopen	"PubSub Publisher example, not setting the DataSetMetaData"	"#2800
+            opened on 8 Jun by
+            cpipero"	"PubSub Publisher example, not setting the DataSetMetaData"	https://github.com/open62541/open62541/issues/2800		"Thank you @jpfr . We are getting closer.
+
+I added the changes and yes, this improves things.
+I now have to understand if there is anything I should add in my code.
+Let me explain details (sorry for the lengthy description, but I hope it helps).
+Adding the Fix
+I added the changes in #2802 . That basically exposes the PublishedData information correctly and without me needing to change the code in the tutorial_pubsub_publish.c file (it basically just works, as I'd expect).
+Here's a screenshot:
+
+However, the DataSetMetaData property of the DataSet is not announced correctly (but at least is not null anymore).
+In this screenshot you see the comparison between the .NET server and the tutorial_pubsub_publish, where the Fields array is empty where it should instead list the one DataField for the current time:
+
+
+Additional Improvements Needed
+This part of the PubSub information model is important because it gives the potential subscribers the needed info to map the DataSetWriter's fields.
+Look at the .NET Sample Config UI that now can successfully navigate to the remote writer dataset (now it doesn' t crash). But if I want to configure the DataReader, I am missing the necessary metadata:
+
+
+Possible Next Steps
+I looked at the code in the  src/pubsub/ua_pubsub_ns0.c  (the file changed by #2802) and I can see that a lot happens in the onRead  handler:
+When the client browses to the  PublishedData property (around line 136) the following code maps the data from the published variable to the PublishedData fields. That's why we can see that info correctly in the client:
+[...]
+case UA_NS0ID_PUBLISHEDDATAITEMSTYPE: {
+            UA_PublishedDataSet *publishedDataSet = UA_PublishedDataSet_findPDSbyId(server, *myNodeId);
+            if(!publishedDataSet)
+                return;
+            switch(nodeContext->elementClassiefier) {
+                case UA_NS0ID_PUBLISHEDDATAITEMSTYPE_PUBLISHEDDATA: {
+                    UA_PublishedVariableDataType *pvd = (UA_PublishedVariableDataType *)
+                            UA_calloc(publishedDataSet->fieldSize, sizeof(UA_PublishedVariableDataType));
+                    size_t counter = 0;
+                    UA_DataSetField *field;
+                    LIST_FOREACH(field, &publishedDataSet->fields, listEntry) {
+                        pvd[counter].attributeId = UA_ATTRIBUTEID_VALUE;
+                        pvd[counter].publishedVariable = field->config.field.variable.publishParameters.publishedVariable;
+                        //UA_NodeId_copy(&field->config.field.variable.publishParameters.publishedVariable, &pvd[counter].publishedVariable);
+                        counter++;
+                    }
+                    UA_Variant_setArray(&value, pvd, publishedDataSet->fieldSize,
+                                        &UA_TYPES[UA_TYPES_PUBLISHEDVARIABLEDATATYPE]);
+                    break;
+                }
+[...]
+However, when the client requests the DataSetMeta data (hence switching the nodeContext->elementClassiefier (spelling ;-) to UA_NS0ID_PUBLISHEDDATAITEMSTYPE_DATASETMETADATA) the only thing that happens (I think) it's copying the PublishedData.DataSetMetaData attributes to the DataSetMetaData property value. But at that point nobody has set anything in the publishedDataSet->dataSetMetaData fields.
+//publishedDataSet->dataSetMetaData is EMPTY at this point so nothing will happen
+ case UA_NS0ID_PUBLISHEDDATAITEMSTYPE_DATASETMETADATA: {
+                    UA_Variant_setScalarCopy(&value, &publishedDataSet->dataSetMetaData, &UA_TYPES[UA_TYPES_DATASETMETADATATYPE]);
+                    break;
+                }
+I don't have time now to attempt to fix this, but I figured I write this and later I keep looking at it while someone might be seeing this and get some ideas.
+Thank you again for the tremendous help."
+1574231898-487	https://github.com/open62541/open62541/issues?page=4&q=is%3Aissue+is%3Aopen	Compile freeRTOS with open62541 errors	"#2893
+            opened on 18 Jul by
+            mrburen121"	Compile freeRTOS with open62541 errors	https://github.com/open62541/open62541/issues/2893		"@cabralfortiss Thanks for the quick answer. I have these defines in my lwipopts.h and double checked it now. I did the changes of the freertos-config file as well. Before i had them I had around 300 errors ;)
+I?m going to try the release pack v1.0 later o"
+1574231834-440	https://github.com/open62541/open62541/issues?page=4&q=is%3Aissue+is%3Aopen	Server does not persist the NodeId of a Node	"#2873
+            opened on 9 Jul by
+            GeorgeSellner"	Server does not persist the NodeId of a Node	https://github.com/open62541/open62541/issues/2873	jpfr	
+1574231283-198	https://github.com/open62541/open62541/issues?page=5&q=is%3Aissue+is%3Aopen	Subscriber implementation not subscribing to timestamp?	"#2771
+            opened on 29 May by
+            theresa95"	Subscriber implementation not subscribing to timestamp?	https://github.com/open62541/open62541/issues/2771		"@theresa95 If you really need your published sensor values on console, add a UA_LOG_INFO() function in the below mentioned line based on the log level with which you wanna operate.
+https://github.com/opcua-tsn-team-kalycito/open62541/blob/23aec0cc21edc973"
+1574231618-382	https://github.com/open62541/open62541/issues?page=5&q=is%3Aissue+is%3Aopen	"[OPCUA CLIENT]: ""UA_Client_getEndpoints""  return ""BadSecureChannelIdInvalid"""	"#2844
+            opened on 26 Jun by
+            elitezhu"	"[OPCUA CLIENT]: ""UA_Client_getEndpoints""  return ""BadSecureChannelIdInvalid"""	https://github.com/open62541/open62541/issues/2844		@mlgiraud How can I change the arrays to empty? which function ? I can test if it works.
+1574231618-368	https://github.com/open62541/open62541/issues?page=5&q=is%3Aissue+is%3Aopen	"[OPCUA CLIENT]: ""UA_Client_getEndpoints""  return ""BadSecureChannelIdInvalid"""	"#2844
+            opened on 26 Jun by
+            elitezhu"	"[OPCUA CLIENT]: ""UA_Client_getEndpoints""  return ""BadSecureChannelIdInvalid"""	https://github.com/open62541/open62541/issues/2844	opcua-tsn-team-kalycito	
+1574231477-289	https://github.com/open62541/open62541/issues?page=5&q=is%3Aissue+is%3Aopen	Dependencies between CustomDataTypes in different UA_DataTypeArray not supported	"#2808
+            opened on 12 Jun by
+            TorbenD"	Dependencies between CustomDataTypes in different UA_DataTypeArray not supported	https://github.com/open62541/open62541/issues/2808		"I adjusted the title to reflect the issue.
+You receive the DataTypeArray together with the namespace definitions.
+
+You could do a little bit of preprocessing before adding the DataTypeArray to the linked list in the server config.
+For example by looking up the dependencies (via the NodeId of the type) and ensuring that DataType definitions that depend on one another end up in the same DataTypeArray.
+
+E.g. by copying the relevant DataTypes to the current DataTypeArray.
+That way we keep the encoding layer really simple and fast.
+
+And the encoding layer can be ""standalone"" without dependencies to the Nodestore layer."
+1574231898-465	https://github.com/open62541/open62541/issues?page=4&q=is%3Aissue+is%3Aopen	Compile freeRTOS with open62541 errors	"#2893
+            opened on 18 Jul by
+            mrburen121"	Compile freeRTOS with open62541 errors	https://github.com/open62541/open62541/issues/2893	cabralfortiss	
+1574231800-414	https://github.com/open62541/open62541/issues?page=4&q=is%3Aissue+is%3Aopen	OPC UA Pub/Sub over MQTT	"#2865
+            opened on 3 Jul by
+            canadyre"	OPC UA Pub/Sub over MQTT	https://github.com/open62541/open62541/issues/2865	sohailmushtaq	
+1574231533-343	https://github.com/open62541/open62541/issues?page=5&q=is%3Aissue+is%3Aopen	Problem when using multiple DataSetReader	"#2817
+            opened on 14 Jun by
+            Fischer-Thomas"	Problem when using multiple DataSetReader	https://github.com/open62541/open62541/issues/2817		
+1574231533-315	https://github.com/open62541/open62541/issues?page=5&q=is%3Aissue+is%3Aopen	Problem when using multiple DataSetReader	"#2817
+            opened on 14 Jun by
+            Fischer-Thomas"	Problem when using multiple DataSetReader	https://github.com/open62541/open62541/issues/2817		"@opcua-tsn-team-kalycito Please have a look.
+These things should be covered by unit tests to prevent regression in the future."
+1574231494-295	https://github.com/open62541/open62541/issues?page=5&q=is%3Aissue+is%3Aopen	NamespaceArray looks good but Namespaces object doesn't match it	"#2810
+            opened on 12 Jun by
+            cpipero"	NamespaceArray looks good but Namespaces object doesn't match it	https://github.com/open62541/open62541/issues/2810	jpfr	
+1574231800-408	https://github.com/open62541/open62541/issues?page=4&q=is%3Aissue+is%3Aopen	OPC UA Pub/Sub over MQTT	"#2865
+            opened on 3 Jul by
+            canadyre"	OPC UA Pub/Sub over MQTT	https://github.com/open62541/open62541/issues/2865	theresa95	
+1574231567-348	https://github.com/open62541/open62541/issues?page=5&q=is%3Aissue+is%3Aopen	Access control over endpoints	"#2829
+            opened on 18 Jun by
+            SebsSa"	Access control over endpoints	https://github.com/open62541/open62541/issues/2829	schroeder-	
+1574231477-285	https://github.com/open62541/open62541/issues?page=5&q=is%3Aissue+is%3Aopen	Dependencies between CustomDataTypes in different UA_DataTypeArray not supported	"#2808
+            opened on 12 Jun by
+            TorbenD"	Dependencies between CustomDataTypes in different UA_DataTypeArray not supported	https://github.com/open62541/open62541/issues/2808		"Custom DataTypes can use other custom DataTypes as long as they end up in the same ""UA_DataTypeArray"" (see open62541/types.h).
+
+The indexing is relative to the current datatype.
+If this does not work, then this is a bug that needs to be solved.
+Yeah, the docs need improvement here."
+1574231567-353	https://github.com/open62541/open62541/issues?page=5&q=is%3Aissue+is%3Aopen	Access control over endpoints	"#2829
+            opened on 18 Jun by
+            SebsSa"	Access control over endpoints	https://github.com/open62541/open62541/issues/2829	mlang-de	
+1574231923-517	https://github.com/open62541/open62541/issues?page=4&q=is%3Aissue+is%3Aopen	"Compiled nodesets do not initialize the variable type, UA Expert can not write to variable"	"#2924
+            opened on 25 Jul by
+            Pro"	"Compiled nodesets do not initialize the variable type, UA Expert can not write to variable"	https://github.com/open62541/open62541/issues/2924	Pro	
+1574231533-330	https://github.com/open62541/open62541/issues?page=5&q=is%3Aissue+is%3Aopen	Problem when using multiple DataSetReader	"#2817
+            opened on 14 Jun by
+            Fischer-Thomas"	Problem when using multiple DataSetReader	https://github.com/open62541/open62541/issues/2817		"Description
+I followed the pull request #2613 and tried the implementation myself.
+
+However after the merge many things don't work anymore.
+
+For example when working with 1 ReaderGroup and 2 DataSetReader the subscribed variables wont receive any data.
+
+  
+    
+      open62541/src/pubsub/ua_pubsub.c
+    
+    
+        Lines 400 to 406
+      in
+      534ca8b
+    
+    
+    
+    
+
+        
+          
+           if(pConnection->readerGroupsSize == 1) { 
+        
+
+        
+          
+               if(LIST_FIRST(&pConnection->readerGroups)->readersCount == 1) { 
+        
+
+        
+          
+               UA_LOG_INFO(&server->config.logger, UA_LOGCATEGORY_SERVER, ""only 1 DataSetReader available. This one will be used.""); 
+        
+
+        
+          
+               dataSetReaderErg = LIST_FIRST(&LIST_FIRST(&pConnection->readerGroups)->readers); 
+        
+
+        
+          
+               } 
+        
+
+        
+          
+            
+        
+
+        
+          
+           } 
+        
+    
+  
+
+
+I located the problem in this code which only allows a single DataSetReader when there is only 1 ReaderGroup. So everytime the stack tries to process the message it doesn't get any DataSetReader.
+Also there is no checking for the publisherId AND writerId in this scenario! There might occur errors/problems when there are two ore more publisher with a different config!
+
+@Fischer-Thomas, thank you for your interest in the subscriber implementation. Can you please use #2631 instead of #2613 as #2631 is the commit that was actually merged. Even in that case, our priority was to provide a quick implementation that focuses specifically on writing the subscribed value into the information model - this was previously not available and we are getting the ball rolling here for interested users. Additional items (including the ones you have mentioned) are definitely in our roadmap and we will be happy to let you know as soon as we have them and their dependencies in place. Please stay tuned for regular updates.
+Regards,
+
+opc-ua-tsn-team-kalycito"
+1574231477-276	https://github.com/open62541/open62541/issues?page=5&q=is%3Aissue+is%3Aopen	Dependencies between CustomDataTypes in different UA_DataTypeArray not supported	"#2808
+            opened on 12 Jun by
+            TorbenD"	Dependencies between CustomDataTypes in different UA_DataTypeArray not supported	https://github.com/open62541/open62541/issues/2808	jpfr	
+1574231496-302	https://github.com/open62541/open62541/issues?page=5&q=is%3Aissue+is%3Aopen	Monitored Item - exception-based model [Question]	"#2814
+            opened on 13 Jun by
+            rudoq32"	Monitored Item - exception-based model [Question]	https://github.com/open62541/open62541/issues/2814	jpfr	
+1574231919-515	https://github.com/open62541/open62541/issues?page=4&q=is%3Aissue+is%3Aopen	Semantic release numbers	"#2923
+            opened on 25 Jul by
+            jrcoding"	Semantic release numbers	https://github.com/open62541/open62541/issues/2923		"@ralphlange @Pro @jpfr
+Because at present the SONAME is set independently of <major_number> and <minor_number> in CMake.txt one runs into problems on Linux because one can't verify that the installed shared library is still the same the application is lin"
+1574231898-481	https://github.com/open62541/open62541/issues?page=4&q=is%3Aissue+is%3Aopen	Compile freeRTOS with open62541 errors	"#2893
+            opened on 18 Jul by
+            mrburen121"	Compile freeRTOS with open62541 errors	https://github.com/open62541/open62541/issues/2893		"... there is no function called
+
+UA_ServerConfig_new_customBuffer. Is this changed in the newest version to UA_ServerConfig_setMinimalCustomBuffer?
+
+Yes correct, we changed how the server config is handled. You can find more on that in our examples on master."
+1574231460-258	https://github.com/open62541/open62541/issues?page=5&q=is%3Aissue+is%3Aopen	"PubSub Publisher example, not setting the DataSetMetaData"	"#2800
+            opened on 8 Jun by
+            cpipero"	"PubSub Publisher example, not setting the DataSetMetaData"	https://github.com/open62541/open62541/issues/2800	cpipero	
+1574231800-433	https://github.com/open62541/open62541/issues?page=4&q=is%3Aissue+is%3Aopen	OPC UA Pub/Sub over MQTT	"#2865
+            opened on 3 Jul by
+            canadyre"	OPC UA Pub/Sub over MQTT	https://github.com/open62541/open62541/issues/2865		"@sohailmushtaq, is there any email address or other social media account so i can contact you?
+Regards"
+1574231770-405	https://github.com/open62541/open62541/issues?page=4&q=is%3Aissue+is%3Aopen	Need for better TCP and mDNS interface selection	"#2864
+            opened on 2 Jul by
+            Pro"	Need for better TCP and mDNS interface selection	https://github.com/open62541/open62541/issues/2864	Pro	
+1574231460-260	https://github.com/open62541/open62541/issues?page=5&q=is%3Aissue+is%3Aopen	"PubSub Publisher example, not setting the DataSetMetaData"	"#2800
+            opened on 8 Jun by
+            cpipero"	"PubSub Publisher example, not setting the DataSetMetaData"	https://github.com/open62541/open62541/issues/2800	jpfr	
+1574231618-371	https://github.com/open62541/open62541/issues?page=5&q=is%3Aissue+is%3Aopen	"[OPCUA CLIENT]: ""UA_Client_getEndpoints""  return ""BadSecureChannelIdInvalid"""	"#2844
+            opened on 26 Jun by
+            elitezhu"	"[OPCUA CLIENT]: ""UA_Client_getEndpoints""  return ""BadSecureChannelIdInvalid"""	https://github.com/open62541/open62541/issues/2844	opcua-tsn-team-kalycito	
+1574231880-454	https://github.com/open62541/open62541/issues?page=4&q=is%3Aissue+is%3Aopen	Event-based Subscriber OPCUA pubsub	"#2890
+            opened on 17 Jul by
+            canadyre"	Event-based Subscriber OPCUA pubsub	https://github.com/open62541/open62541/issues/2890		"Hi @canadyre,
+
+what do you mean with "" the subscriber is using a polling mechanism set to some number of milliseconds"".
+
+Are you using UDP?"
+1574231743-400	https://github.com/open62541/open62541/issues?page=4&q=is%3Aissue+is%3Aopen	PubSub packet latency	"#2860
+            opened on 2 Jul by
+            canadyre"	PubSub packet latency	https://github.com/open62541/open62541/issues/2860		"As @ccvca already mentions, you have to make sure that the clocks are synchronized. You can use PTP for that (which has up to nanoseconds accuracy).
+Also, you have to make sure that the router is routing your packages with high priority (depends on your router), otherwise you may end up with jitter.
+Maybe this may also be interesting for you: https://www.kernel.org/doc/Documentation/networking/timestamping.txt"
+1574231340-209	https://github.com/open62541/open62541/issues?page=5&q=is%3Aissue+is%3Aopen	Updating nodes (deleting and adding nodes) during runtime from dedicated thread	"#2783
+            opened on 4 Jun by
+            Nik654"	Updating nodes (deleting and adding nodes) during runtime from dedicated thread	https://github.com/open62541/open62541/issues/2783	ccvca	
+1574231800-437	https://github.com/open62541/open62541/issues?page=4&q=is%3Aissue+is%3Aopen	OPC UA Pub/Sub over MQTT	"#2865
+            opened on 3 Jul by
+            canadyre"	OPC UA Pub/Sub over MQTT	https://github.com/open62541/open62541/issues/2865		"Hi,
+
+there is a branch which contains OPC UA PubSub MQTT with examples also. Check the branch pubsub_mqtt_clean. My master thesis is about OPC UA PubSub, so I've worked on PubSub with MQTT, in case you have questions just let me know.
+
+Regards
+
+Sohail
+
+Hi @sohailmushtaq can you show me where this branch is ?
+Regards
+
+Please ignore @sohailmushtaq , i have found it
+Regards"
+1574231533-344	https://github.com/open62541/open62541/issues?page=5&q=is%3Aissue+is%3Aopen	Problem when using multiple DataSetReader	"#2817
+            opened on 14 Jun by
+            Fischer-Thomas"	Problem when using multiple DataSetReader	https://github.com/open62541/open62541/issues/2817		}
+1574231516-304	https://github.com/open62541/open62541/issues?page=5&q=is%3Aissue+is%3Aopen	How to create a certification and send this to server	"#2816
+            opened on 14 Jun by
+            AndyarcherReset"	How to create a certification and send this to server	https://github.com/open62541/open62541/issues/2816	SebsSa	
+1574231618-369	https://github.com/open62541/open62541/issues?page=5&q=is%3Aissue+is%3Aopen	"[OPCUA CLIENT]: ""UA_Client_getEndpoints""  return ""BadSecureChannelIdInvalid"""	"#2844
+            opened on 26 Jun by
+            elitezhu"	"[OPCUA CLIENT]: ""UA_Client_getEndpoints""  return ""BadSecureChannelIdInvalid"""	https://github.com/open62541/open62541/issues/2844	elitezhu	
+1574231743-401	https://github.com/open62541/open62541/issues?page=4&q=is%3Aissue+is%3Aopen	PubSub packet latency	"#2860
+            opened on 2 Jul by
+            canadyre"	PubSub packet latency	https://github.com/open62541/open62541/issues/2860		"The complicated procedure:
+
+PTP Sync (only software timestamp is possible on RPi3 and you need to do PTP specific changes to kernel and rebuild, 3hrs procedure)
+PHC2SYS sync is needed
+compensate for the poor accuracy due to non RT environment and software clock
+
+Easier path:
+easier measurement will be to send 1 byte to
+
+node 2 and receive the same data at node 1 and try to find the overall time required for this and simply divide by 2 to get your latency. In this method you will be doing the measurement in the same time context/domain which removes you the headache of Ptp and PHC2SYS.
+My RPi3 showed far better performance than yours even though I had a legacy Ethernet switch in between.
+Please refer the issue #2846 and share your feedback"
+1574231533-325	https://github.com/open62541/open62541/issues?page=5&q=is%3Aissue+is%3Aopen	Problem when using multiple DataSetReader	"#2817
+            opened on 14 Jun by
+            Fischer-Thomas"	Problem when using multiple DataSetReader	https://github.com/open62541/open62541/issues/2817		}
+1574231426-244	https://github.com/open62541/open62541/issues?page=5&q=is%3Aissue+is%3Aopen	Can report.ci be helpful?	"#2793
+            opened on 6 Jun by
+            escherstair"	Can report.ci be helpful?	https://github.com/open62541/open62541/issues/2793	Pro	
+1574231533-312	https://github.com/open62541/open62541/issues?page=5&q=is%3Aissue+is%3Aopen	Problem when using multiple DataSetReader	"#2817
+            opened on 14 Jun by
+            Fischer-Thomas"	Problem when using multiple DataSetReader	https://github.com/open62541/open62541/issues/2817	jpfr	
+1574231533-336	https://github.com/open62541/open62541/issues?page=5&q=is%3Aissue+is%3Aopen	Problem when using multiple DataSetReader	"#2817
+            opened on 14 Jun by
+            Fischer-Thomas"	Problem when using multiple DataSetReader	https://github.com/open62541/open62541/issues/2817		"UA_LOG_INFO(&server->config.logger, UA_LOGCATEGORY_SERVER, ""only 1 DataSetReader available. This one will be used."");"
+1574231516-309	https://github.com/open62541/open62541/issues?page=5&q=is%3Aissue+is%3Aopen	How to create a certification and send this to server	"#2816
+            opened on 14 Jun by
+            AndyarcherReset"	How to create a certification and send this to server	https://github.com/open62541/open62541/issues/2816		"This is definitely supported.
+See here the example:
+
+https://github.com/open62541/open62541/blob/master/examples/encryption/client_encryption.c
+You can define which SecurityPolicy to use in the client config:
+
+https://open62541.org/doc/current/client.html#client-configuration"
+1574231914-506	https://github.com/open62541/open62541/issues?page=4&q=is%3Aissue+is%3Aopen	Generated custom data-types inside a method call	"#2920
+            opened on 24 Jul by
+            starki93"	Generated custom data-types inside a method call	https://github.com/open62541/open62541/issues/2920		
+1574231283-192	https://github.com/open62541/open62541/issues?page=5&q=is%3Aissue+is%3Aopen	Subscriber implementation not subscribing to timestamp?	"#2771
+            opened on 29 May by
+            theresa95"	Subscriber implementation not subscribing to timestamp?	https://github.com/open62541/open62541/issues/2771	merlingeorge555	
+1574231898-471	https://github.com/open62541/open62541/issues?page=4&q=is%3Aissue+is%3Aopen	Compile freeRTOS with open62541 errors	"#2893
+            opened on 18 Jul by
+            mrburen121"	Compile freeRTOS with open62541 errors	https://github.com/open62541/open62541/issues/2893	cabralfortiss	
+1574231477-283	https://github.com/open62541/open62541/issues?page=5&q=is%3Aissue+is%3Aopen	Dependencies between CustomDataTypes in different UA_DataTypeArray not supported	"#2808
+            opened on 12 Jun by
+            TorbenD"	Dependencies between CustomDataTypes in different UA_DataTypeArray not supported	https://github.com/open62541/open62541/issues/2808	TorbenD	
+1574231283-199	https://github.com/open62541/open62541/issues?page=5&q=is%3Aissue+is%3Aopen	Subscriber implementation not subscribing to timestamp?	"#2771
+            opened on 29 May by
+            theresa95"	Subscriber implementation not subscribing to timestamp?	https://github.com/open62541/open62541/issues/2771		"hey @merlingeorge555 and @johndzilva ,
+
+I would like to give a big thank you to your answers!
+As I using the subscribe application as a basement for further extended the application, I would not only like to print the timestamp value to the console, but also store them in a variable to write them in a csv file.
+As I understand correctly, one way to do this is to define a function myFunc which calls UA_Server_readValue(UA_Server *server, const UA_NodeId nodeId, UA_Variant *outValue). myFunc then casts the outValue to DateTime and writes it into the csv file.  myFunc is called in ua_pubsub.c line 1098 where it is executed everytime a new NetworkMessage is received.
+BUT: as you can see in the interface of the UA_Server_readValue(UA_Server *server, const UA_NodeId nodeId, UA_Variant *outValue), the second parameter is the nodeId of the serverside datetime node.
+
+From the perspective of the subscriber, I do not know this nodeId. So how can I retrieve this nodeId on runtime (not hardcoded)?
+
+As the subscribe application defined unique fieldNames for 4 fields (in the fillTestDataSetMetaData() mehthod), is it possible to get the nodeId by fieldname?
+Thank you both for your help !"
+1574231800-416	https://github.com/open62541/open62541/issues?page=4&q=is%3Aissue+is%3Aopen	OPC UA Pub/Sub over MQTT	"#2865
+            opened on 3 Jul by
+            canadyre"	OPC UA Pub/Sub over MQTT	https://github.com/open62541/open62541/issues/2865	kusumy	
+1574231477-293	https://github.com/open62541/open62541/issues?page=5&q=is%3Aissue+is%3Aopen	Dependencies between CustomDataTypes in different UA_DataTypeArray not supported	"#2808
+            opened on 12 Jun by
+            TorbenD"	Dependencies between CustomDataTypes in different UA_DataTypeArray not supported	https://github.com/open62541/open62541/issues/2808		Are there any considerations how to solve this problem?
+1574231800-422	https://github.com/open62541/open62541/issues?page=4&q=is%3Aissue+is%3Aopen	OPC UA Pub/Sub over MQTT	"#2865
+            opened on 3 Jul by
+            canadyre"	OPC UA Pub/Sub over MQTT	https://github.com/open62541/open62541/issues/2865	kusumy	
+1574231898-476	https://github.com/open62541/open62541/issues?page=4&q=is%3Aissue+is%3Aopen	Compile freeRTOS with open62541 errors	"#2893
+            opened on 18 Jul by
+            mrburen121"	Compile freeRTOS with open62541 errors	https://github.com/open62541/open62541/issues/2893		"You said you use the flag -UA_ARCHITECTURE_FREERTOSLWIP (not sure where) but this might be -DUA_ARCHITECTURE_FREERTOSLWIP instead. In most IDE, you can add symbols to your project, and then it generates the flag according to it.
+If your generating the amalgamted files and including them in a project in an IDE prepared for your embedded, then when you do cmake you only need -DUA_ARCHITECTURE=freertosLWIP regarding the architecture and the compilation will fail, but the generated files will be there. The other flags are needed when compiling, which should be set by the IDE"
+1574231770-407	https://github.com/open62541/open62541/issues?page=4&q=is%3Aissue+is%3Aopen	Need for better TCP and mDNS interface selection	"#2864
+            opened on 2 Jul by
+            Pro"	Need for better TCP and mDNS interface selection	https://github.com/open62541/open62541/issues/2864		"Yes, definitely. We should try to get #2408 in as soon as possible and then create follow-up PRs.
+This is just a meta issue/reminder/idea collection to implement that feature."
+1574231533-326	https://github.com/open62541/open62541/issues?page=5&q=is%3Aissue+is%3Aopen	Problem when using multiple DataSetReader	"#2817
+            opened on 14 Jun by
+            Fischer-Thomas"	Problem when using multiple DataSetReader	https://github.com/open62541/open62541/issues/2817		
+1574231567-352	https://github.com/open62541/open62541/issues?page=5&q=is%3Aissue+is%3Aopen	Access control over endpoints	"#2829
+            opened on 18 Jun by
+            SebsSa"	Access control over endpoints	https://github.com/open62541/open62541/issues/2829	Feras992	
+1574231919-511	https://github.com/open62541/open62541/issues?page=4&q=is%3Aissue+is%3Aopen	Semantic release numbers	"#2923
+            opened on 25 Jul by
+            jrcoding"	Semantic release numbers	https://github.com/open62541/open62541/issues/2923	Pro	
+1574231743-396	https://github.com/open62541/open62541/issues?page=4&q=is%3Aissue+is%3Aopen	PubSub packet latency	"#2860
+            opened on 2 Jul by
+            canadyre"	PubSub packet latency	https://github.com/open62541/open62541/issues/2860	ccvca	
+1574231914-504	https://github.com/open62541/open62541/issues?page=4&q=is%3Aissue+is%3Aopen	Generated custom data-types inside a method call	"#2920
+            opened on 24 Jul by
+            starki93"	Generated custom data-types inside a method call	https://github.com/open62541/open62541/issues/2920		
+1574231834-444	https://github.com/open62541/open62541/issues?page=4&q=is%3Aissue+is%3Aopen	Server does not persist the NodeId of a Node	"#2873
+            opened on 9 Jul by
+            GeorgeSellner"	Server does not persist the NodeId of a Node	https://github.com/open62541/open62541/issues/2873		"I agree. Nodeids should be stable.
+Somehow, the nodeid you look at is randomly generated.
+We had deterministic initialization of the RNG in the past.
+
+https://github.com/open62541/open62541/blob/master/src/server/ua_server.c#L225
+
+But that lead to repeated session tokens and problems in different areas.
+My suggestion is we go, find the source where randomness is added here and make it deterministic."
+1574231800-411	https://github.com/open62541/open62541/issues?page=4&q=is%3Aissue+is%3Aopen	OPC UA Pub/Sub over MQTT	"#2865
+            opened on 3 Jul by
+            canadyre"	OPC UA Pub/Sub over MQTT	https://github.com/open62541/open62541/issues/2865	sohailmushtaq	
+1574231898-474	https://github.com/open62541/open62541/issues?page=4&q=is%3Aissue+is%3Aopen	Compile freeRTOS with open62541 errors	"#2893
+            opened on 18 Jul by
+            mrburen121"	Compile freeRTOS with open62541 errors	https://github.com/open62541/open62541/issues/2893	svro86	
+1574231533-342	https://github.com/open62541/open62541/issues?page=5&q=is%3Aissue+is%3Aopen	Problem when using multiple DataSetReader	"#2817
+            opened on 14 Jun by
+            Fischer-Thomas"	Problem when using multiple DataSetReader	https://github.com/open62541/open62541/issues/2817		
+1574231693-390	https://github.com/open62541/open62541/issues?page=4&q=is%3Aissue+is%3Aopen	Remove multiple compiler flags for new architecture does not work	"#2850
+            opened on 28 Jun by
+            gbeuning"	Remove multiple compiler flags for new architecture does not work	https://github.com/open62541/open62541/issues/2850	jpfr	
+1574231460-267	https://github.com/open62541/open62541/issues?page=5&q=is%3Aissue+is%3Aopen	"PubSub Publisher example, not setting the DataSetMetaData"	"#2800
+            opened on 8 Jun by
+            cpipero"	"PubSub Publisher example, not setting the DataSetMetaData"	https://github.com/open62541/open62541/issues/2800		"Small Update
+Upon more investigation of the following code (copied from above, repeated for convenience)
+[...]
+case UA_NS0ID_PUBLISHEDDATAITEMSTYPE: {
+            UA_PublishedDataSet *publishedDataSet = UA_PublishedDataSet_findPDSbyId(server, *myNodeId);
+            if(!publishedDataSet)
+                return;
+            switch(nodeContext->elementClassiefier) {
+                case UA_NS0ID_PUBLISHEDDATAITEMSTYPE_PUBLISHEDDATA: {
+                    UA_PublishedVariableDataType *pvd = (UA_PublishedVariableDataType *)
+                            UA_calloc(publishedDataSet->fieldSize, sizeof(UA_PublishedVariableDataType));
+                    size_t counter = 0;
+                    UA_DataSetField *field;
+                    LIST_FOREACH(field, &publishedDataSet->fields, listEntry) {
+                        pvd[counter].attributeId = UA_ATTRIBUTEID_VALUE;
+                        pvd[counter].publishedVariable = field->config.field.variable.publishParameters.publishedVariable;
+                        //UA_NodeId_copy(&field->config.field.variable.publishParameters.publishedVariable, &pvd[counter].publishedVariable);
+                        counter++;
+                    }
+                    UA_Variant_setArray(&value, pvd, publishedDataSet->fieldSize,
+                                        &UA_TYPES[UA_TYPES_PUBLISHEDVARIABLEDATATYPE]);
+                    break;
+                }
+[...]
+the publishedDataSet->fields  do not contain any metadata also.
+This is something that I think the UA_PubSubManager should do...
+I'm now looking  at the ua_pubsub_manager.c  trying to make sense of it"
+1574231283-201	https://github.com/open62541/open62541/issues?page=5&q=is%3Aissue+is%3Aopen	Subscriber implementation not subscribing to timestamp?	"#2771
+            opened on 29 May by
+            theresa95"	Subscriber implementation not subscribing to timestamp?	https://github.com/open62541/open62541/issues/2771		"hey @merlingeorge555,
+
+ I would like to ask you how the client (which is subscribed to the
+published sensorvalues) can WRITE a value on the server over the network.
+Like: I want the Client to set the temperature value to 0.
+How can I accomplish this?
+
+I was thinking about something like this:
+
+static void updateCurrentTime(UA_Server *server) {
+    UA_DateTime now = UA_DateTime_now();
+    UA_Variant value;
+    UA_Variant_setScalar(&value, &now, &UA_TYPES[UA_TYPES_DATETIME]);
+    UA_NodeId currentNodeId = UA_NODEID_STRING(1,
+""current-time-value-callback"");
+    UA_Server_writeValue(server, currentNodeId, value);
+
+}
+
+But I cannot use the UA_Server_writeValue method because this is a
+serverside method and I want to set the value from the client side.
+Any suggestions?
+
+Thanks a lot in advance!
+Best regards
+
+Am Mi., 29. Mai 2019 um 20:28 Uhr schrieb merlingeorge555 <
+notifications@github.com>:
+…
+ Hello @theresa95 <https://github.com/theresa95>,
+
+ Sounds good.
+
+ Question 1:
+ Subscribing application (It is subscribing to 4 hardcoded DataSetFields.
+ The rst field is a DateTime type. So as far as I understand, it should be
+ able to subscribe to the publishing timestamp field.)
+
+ Yes, the implementation seems to have a publisher that publishes the
+ dateandtime for every 100ms interval. And also the subscriber should
+ subscribe the same. Your understanding seems to be perfect.
+
+ Question 2: So as you can see in the subscriber console, the four
+ VariableNodes are successfully added (first of which is of type DateTime).
+ But it seems like the subscribe application is not able to parse the
+ timestamp withing the NetworkMessage.
+
+ I see you misunderstood the console print in the subscriber, because if
+ I'm not wrong you expected a print near the ""Message Receive:"". And it is
+ empty because it is just a print statement in
+ *""UA_ReaderGroup_subscribeCallback""* in /src/pubsub/ua_pubsub.c in
+ line:2392
+
+ if you want to see the value of the ""dateandtime"" from the subscriber
+ information model, use the client gui and browse the information model when
+ the subscriber is running. Then you can see the data change. The subscriber
+ implementation doesn't seems to have a UA_server_readValue() API to read
+ the variable value from the information model and display the value in the
+ console print. If you want to read and print in the tutorial application
+ use the UA_server_readValue() API in a separate call back and read
+ repeatedly
+
+ Question 3: Also, I do not understand the console output of the publish
+ application. It says that two nodes are not found. Why is that? Which nodes
+ are they?
+
+ In the *publisher* if you browse the information model using the client
+ tool you can find the objects without the parent node. And also it's not
+ mandatory that objects should have a parent node name. Its a optional in
+ modelling rule. That's the reason for this ""Node id not found"" console
+ print. But to my understanding you don't need to worry about this, it means
+ that it won't affect the publisher and subscriber working.
+
+ Question 4: I would like to use this subscriber implementation to
+ subscribe to my published sensorvalues. But since the application is not
+ able to subscribe to the timestamp correctly, I will have to solve this
+ issue first.
+
+ You don't need to solve anything. It seems to be working fine.
+
+ Hope my answer helps.
+
+ Thanks,
+ Merlin
+
+ —
+ You are receiving this because you were mentioned.
+ Reply to this email directly, view it on GitHub
+ <#2771?email_source=notifications&email_token=AE4O5NZOG43IRZUOS3BJHO3PX3DNNA5CNFSM4HQKAUN2YY3PNVWWK3TUL52HS4DFVREXG43VMVBW63LNMVXHJKTDN5WW2ZLOORPWSZGODWQHO3Y#issuecomment-497055599>,
+ or mute the thread
+ <https://github.com/notifications/unsubscribe-auth/AE4O5N5USDRFJF5QMMTA5D3PX3DNNANCNFSM4HQKAUNQ>
+ ."
+1574231898-483	https://github.com/open62541/open62541/issues?page=4&q=is%3Aissue+is%3Aopen	Compile freeRTOS with open62541 errors	"#2893
+            opened on 18 Jul by
+            mrburen121"	Compile freeRTOS with open62541 errors	https://github.com/open62541/open62541/issues/2893		"For now I have two questions left:
+1. What heap file are you using? Heap 1,2,3,4 or 5?
+
+
+I'm using 3 with realloc and calloc self-implemented just calling pvPortMalloc
+
+static void opcua_thread(void *arg)
+
+{
+
+//Allows to set smaller buffer for the connections, which can cause problems
+
+UA_UInt32 sendBufferSize = 8000; //64 KB was too much for my platform
+
+UA_UInt32 recvBufferSize = 8000;  //64 KB was too much for my platform
+UA_Server *server = UA_Server_new();
+
+UA_ServerConfig *config = UA_Server_getConfig(server);
+UA_ServerConfig_setMinimalCustomBuffer(config, 4840, 0, sendBufferSize, recvBufferSize);
+//VERY IMPORTANT: Set the hostname with your IP before allocating the server
+
+UA_ServerConfig_setCustomHostname(config, UA_STRING(""192.168.1.10""));
+
+UA_ServerConfig_setDefault(UA_Server_getConfig(server));
+
+I think this last line shouldn't be there since it will reset the hostname you set the line before
+
+//example
+
+// https://open62541.org/doc/current/tutorial_server_variable.html
+UA_NodeId myIntegerNodeId = UA_NODEID_STRING(1, ""the.answer"");
+/* Write a different integer value */
+
+UA_Int32 myInteger = 43;
+
+UA_Variant myVar;
+
+UA_Variant_init(&myVar);
+
+UA_Variant_setScalar(&myVar, &myInteger, &UA_TYPES[UA_TYPES_INT32]);
+
+UA_Server_writeValue(server, myIntegerNodeId, myVar);
+/* Set the status code of the value to an error code. The function
+
+UA_Server_write provides access to the raw service. The above
+UA_Server_writeValue is syntactic sugar for writing a specific node
+attribute with the write service. */
+
+UA_WriteValue wv;
+
+UA_WriteValue_init(&wv);
+
+wv.nodeId = myIntegerNodeId;
+
+wv.attributeId = UA_ATTRIBUTEID_VALUE;
+
+wv.value.status = UA_STATUSCODE_BADNOTCONNECTED;
+
+wv.value.hasStatus = true;
+
+UA_Server_write(server, &wv);
+
+/* Reset the variable to a good statuscode with a value */
+
+wv.value.hasStatus = false;
+
+wv.value.value = myVar;
+
+wv.value.hasValue = true;
+
+UA_Server_write(server, &wv);
+
+}
+
+You're not starting your server.
+From the example, you see at the end of the function the following:
+ UA_StatusCode retval = UA_Server_run(server, &running); //Server runs here until the boolean running is set to false from someone else
+ UA_Server_delete(server);"
+1574231460-250	https://github.com/open62541/open62541/issues?page=5&q=is%3Aissue+is%3Aopen	"PubSub Publisher example, not setting the DataSetMetaData"	"#2800
+            opened on 8 Jun by
+            cpipero"	"PubSub Publisher example, not setting the DataSetMetaData"	https://github.com/open62541/open62541/issues/2800	jpfr	
+1574231283-194	https://github.com/open62541/open62541/issues?page=5&q=is%3Aissue+is%3Aopen	Subscriber implementation not subscribing to timestamp?	"#2771
+            opened on 29 May by
+            theresa95"	Subscriber implementation not subscribing to timestamp?	https://github.com/open62541/open62541/issues/2771	theresa95	
+1574231743-398	https://github.com/open62541/open62541/issues?page=4&q=is%3Aissue+is%3Aopen	PubSub packet latency	"#2860
+            opened on 2 Jul by
+            canadyre"	PubSub packet latency	https://github.com/open62541/open62541/issues/2860	kingalexsylvester	
+1574231391-229	https://github.com/open62541/open62541/issues?page=5&q=is%3Aissue+is%3Aopen	UA_server_browse maxrefs	"#2791
+            opened on 5 Jun by
+            etm"	UA_server_browse maxrefs	https://github.com/open62541/open62541/issues/2791	etm	
+1574231340-211	https://github.com/open62541/open62541/issues?page=5&q=is%3Aissue+is%3Aopen	Updating nodes (deleting and adding nodes) during runtime from dedicated thread	"#2783
+            opened on 4 Jun by
+            Nik654"	Updating nodes (deleting and adding nodes) during runtime from dedicated thread	https://github.com/open62541/open62541/issues/2783		"Hey @ccvca,
+thanks for providing the answer.
+
+Can we preserve this for the future?
+Feel free to add you answer to a ""Frequently Asked Questions"" page in the wiki."
+1574231340-213	https://github.com/open62541/open62541/issues?page=5&q=is%3Aissue+is%3Aopen	Updating nodes (deleting and adding nodes) during runtime from dedicated thread	"#2783
+            opened on 4 Jun by
+            Nik654"	Updating nodes (deleting and adding nodes) during runtime from dedicated thread	https://github.com/open62541/open62541/issues/2783		"Yes that is the way I'm using this. Instead of locking a mutex, I'm using unique_lock (https://en.cppreference.com/w/cpp/thread/unique_lock) and call the lock/unlock in the loop on this.
+
+Also suggest to add these lines to you thread 0 loop, otherwise my other thread was very unlucky of locking the mutex (it has take up to 5s):
+std::this_thread::yield(); // < This line ensures that a waiting thread is executed
+std::this_thread::sleep_for(std::chrono::microseconds(10));
+
+@jpfr I've no problem preserving this in an FAQ, but as this is a C library a solution in with pthread would be more useful."
+1574231834-443	https://github.com/open62541/open62541/issues?page=4&q=is%3Aissue+is%3Aopen	Server does not persist the NodeId of a Node	"#2873
+            opened on 9 Jul by
+            GeorgeSellner"	Server does not persist the NodeId of a Node	https://github.com/open62541/open62541/issues/2873		"OPC-UA Standard:
+https://opcfoundation.github.io/UA-TypeRepository/Core/docs/Part3/
+
+5.2.2 NodeId (link)
+Nodes are unambiguously identified using a constructed identifier called the NodeId. Some Servers may accept alternative NodeIds in addition to the canonical NodeId represented in this Attribute. A Server shall persist the NodeId of a Node, that is, it shall not generate new NodeIds when rebooting. The structure of the NodeId is defined in 8.2."
+1574231533-338	https://github.com/open62541/open62541/issues?page=5&q=is%3Aissue+is%3Aopen	Problem when using multiple DataSetReader	"#2817
+            opened on 14 Jun by
+            Fischer-Thomas"	Problem when using multiple DataSetReader	https://github.com/open62541/open62541/issues/2817		dataSetReaderErg = LIST_FIRST(&LIST_FIRST(&pConnection->readerGroups)->readers);
+1574231743-399	https://github.com/open62541/open62541/issues?page=4&q=is%3Aissue+is%3Aopen	PubSub packet latency	"#2860
+            opened on 2 Jul by
+            canadyre"	PubSub packet latency	https://github.com/open62541/open62541/issues/2860		"So your 30ms latency is calculated on the receiver side, by subtracting the current time with the time in the package?
+
+In this case please evaluate that the clocks of the raspberry Pis are synchronized down to ms range. Probably they have a difference of some ms."
+1574231898-472	https://github.com/open62541/open62541/issues?page=4&q=is%3Aissue+is%3Aopen	Compile freeRTOS with open62541 errors	"#2893
+            opened on 18 Jul by
+            mrburen121"	Compile freeRTOS with open62541 errors	https://github.com/open62541/open62541/issues/2893	svro86	
+1574231374-225	https://github.com/open62541/open62541/issues?page=5&q=is%3Aissue+is%3Aopen	BadSessionIdInvalid from Client	"#2790
+            opened on 5 Jun by
+            MarkusWeinand"	BadSessionIdInvalid from Client	https://github.com/open62541/open62541/issues/2790		"Thanks for your response,
+
+I dont know why my tcpdump didnt capture all the packages. Here is an new tcpdump with hopefully all package.
+
+tcpdump.zip
+
+The communication is not via wifi, but I know that there is a lot of traffic in our network.
+
+But the Client has 192.168.25.31 and the Siemens S7 192.168.25.131, this should help filtering the tcpdump.
+I didn't even know I had the UA Client running, this time I only had the open62541 Client running, but still got the same result.
+But you can see that in the CreateSessionResponse SessionTimout is 30 sec.
+
+Now I just read the current server time to keep the session alive, like so.
+UA_Variant value;
+UA_Client_readValueAttribute(client, UA_NODEID_NUMERIC(0, UA_NS0ID_SERVER_SERVERSTATUS_CURRENTTIME), &value);
+
+I dont know if this is a good way of keeping the session alive or if there is a better solution?"
+1574231880-455	https://github.com/open62541/open62541/issues?page=4&q=is%3Aissue+is%3Aopen	Event-based Subscriber OPCUA pubsub	"#2890
+            opened on 17 Jul by
+            canadyre"	Event-based Subscriber OPCUA pubsub	https://github.com/open62541/open62541/issues/2890		"Hi @sohailmushtaq ,
+
+Yes I am using UDP right now, and I just mean that the subscriber polls for a message every 5-10 ms."
+1574231800-431	https://github.com/open62541/open62541/issues?page=4&q=is%3Aissue+is%3Aopen	OPC UA Pub/Sub over MQTT	"#2865
+            opened on 3 Jul by
+            canadyre"	OPC UA Pub/Sub over MQTT	https://github.com/open62541/open62541/issues/2865		"hi @sohailmushtaq, i am interested on your OPC UA thesis, because i am also doing a thesis for opc ua pub sub implementation for Battery Management System. I hope you can share your thesis, so i can have more information about opc ua pubsub."
+1574231340-206	https://github.com/open62541/open62541/issues?page=5&q=is%3Aissue+is%3Aopen	Updating nodes (deleting and adding nodes) during runtime from dedicated thread	"#2783
+            opened on 4 Jun by
+            Nik654"	Updating nodes (deleting and adding nodes) during runtime from dedicated thread	https://github.com/open62541/open62541/issues/2783	ccvca	
+1574231374-222	https://github.com/open62541/open62541/issues?page=5&q=is%3Aissue+is%3Aopen	BadSessionIdInvalid from Client	"#2790
+            opened on 5 Jun by
+            MarkusWeinand"	BadSessionIdInvalid from Client	https://github.com/open62541/open62541/issues/2790	MarkusWeinand	
+1574231618-370	https://github.com/open62541/open62541/issues?page=5&q=is%3Aissue+is%3Aopen	"[OPCUA CLIENT]: ""UA_Client_getEndpoints""  return ""BadSecureChannelIdInvalid"""	"#2844
+            opened on 26 Jun by
+            elitezhu"	"[OPCUA CLIENT]: ""UA_Client_getEndpoints""  return ""BadSecureChannelIdInvalid"""	https://github.com/open62541/open62541/issues/2844	elitezhu	
+1574231898-489	https://github.com/open62541/open62541/issues?page=4&q=is%3Aissue+is%3Aopen	Compile freeRTOS with open62541 errors	"#2893
+            opened on 18 Jul by
+            mrburen121"	Compile freeRTOS with open62541 errors	https://github.com/open62541/open62541/issues/2893		@cabralfortiss I actually don?t know what went wrong yesterday. Overnight I thought there might be a problem because I use RMII ethernet config insted of MII but that was not the problem. I did set up a whole new project in another workspace this morning 
+1574231910-493	https://github.com/open62541/open62541/issues?page=4&q=is%3Aissue+is%3Aopen	Get all changed monitored items of subscription at the same time	"#2913
+            opened on 23 Jul by
+            je1h"	Get all changed monitored items of subscription at the same time	https://github.com/open62541/open62541/issues/2913	je1h	
+1574231460-256	https://github.com/open62541/open62541/issues?page=5&q=is%3Aissue+is%3Aopen	"PubSub Publisher example, not setting the DataSetMetaData"	"#2800
+            opened on 8 Jun by
+            cpipero"	"PubSub Publisher example, not setting the DataSetMetaData"	https://github.com/open62541/open62541/issues/2800	jpfr	
+1574231800-428	https://github.com/open62541/open62541/issues?page=4&q=is%3Aissue+is%3Aopen	OPC UA Pub/Sub over MQTT	"#2865
+            opened on 3 Jul by
+            canadyre"	OPC UA Pub/Sub over MQTT	https://github.com/open62541/open62541/issues/2865		"Hello @sohailmushtaq,
+
+I am trying to use tutorial_pubsub_mqtt. It seems that when I compile the project with UA_BUILD_EXAMPLES it is not compiled.
+
+I am struggling to create an C project in MS VC with tutorial_pubsub_mqtt.
+
+By a chance do you have a repository where is tutorial_pubsub_mqtt built as an example?"
